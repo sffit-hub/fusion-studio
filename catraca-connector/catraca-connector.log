@@ -1,0 +1,380 @@
+[2026-06-15T16:08:38.136Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: dry-run
+[2026-06-15T16:10:27.823Z] Aguardando conexao: HTTP 502
+[2026-06-15T16:10:30.599Z] Aguardando conexao: HTTP 502
+[2026-06-15T16:10:33.795Z] Aguardando conexao: HTTP 502
+[2026-06-15T16:10:36.734Z] Aguardando conexao: HTTP 502
+[2026-06-15T16:10:39.986Z] Aguardando conexao: HTTP 502
+[2026-06-15T16:10:42.740Z] Aguardando conexao: HTTP 502
+[2026-06-15T16:10:45.487Z] Aguardando conexao: HTTP 502
+[2026-06-15T16:10:48.689Z] Aguardando conexao: HTTP 502
+[2026-06-15T16:11:01.411Z] Aguardando conexao: Erro interno
+[2026-06-15T16:11:05.014Z] Comando recebido: catraca-1781539861634-3ddc7d | marcos andre souza
+[2026-06-15T16:11:08.928Z] OK: Teste recebido pelo conector. Janela simulada de 3 segundos. Modo dry-run nao abre a catraca.
+[2026-06-15T16:11:24.720Z] Comando recebido: catraca-1781539882842-4fcab8 | marcos andre souza
+[2026-06-15T16:11:28.521Z] OK: Teste recebido pelo conector. Janela simulada de 3 segundos. Modo dry-run nao abre a catraca.
+[2026-06-15T16:11:35.117Z] Aguardando conexao: Erro interno
+[2026-06-15T16:11:38.813Z] Comando recebido: catraca-1781539895634-2bdb78 | marcos andre souza
+[2026-06-15T16:11:49.908Z] OK: Teste recebido pelo conector. Janela simulada de 10 segundos. Modo dry-run nao abre a catraca.
+[2026-06-15T17:02:41.164Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T17:08:43.773Z] Comando recebido: catraca-1781543322786-e3ad6f | ANA PATRICIA OLIVEIRA DA SILVA
+[2026-06-15T17:08:46.679Z] FALHA: Exce��o ao chamar "SetFocus" com "0" argumento(s): "O elemento de destino n�o pode receber o foco."
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:81 caractere:1
++ $window.SetFocus()
++ ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [], MethodInvocationException
+    + FullyQualifiedErrorId : InvalidOperationException
+ 
+Exce��o ao chamar "GetCurrentPattern" com "1" argumento(s): "Padr�o sem-suporte."
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:46 caractere:3
++   $pattern = $Control.GetCurrentPattern([System.Windows.Automation.Se ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [], MethodInvocationException
+    + FullyQualifiedErrorId : InvalidOperationException
+ 
+N�o � poss�vel chamar um m�todo em uma express�o de valor nulo.
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:47 caractere:3
++   $pattern.Select()
++   ~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+ 
+Exce��o ao chamar "GetCurrentPattern" com "1" argumento(s): "Padr�o sem-suporte."
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:46 caractere:3
++   $pattern = $Control.GetCurrentPattern([System.Windows.Automation.Se ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [], MethodInvocationException
+    + FullyQualifiedErrorId : InvalidOperationException
+ 
+N�o � poss�vel chamar um m�todo em uma express�o de valor nulo.
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:47 caractere:3
++   $pattern.Select()
++   ~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+ 
+Nao encontrei o campo de segundos.
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:99 caractere:3
++   throw "Nao encontrei o campo de segundos."
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Nao encontrei o campo de segundos.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Nao encontrei o campo de segundos.
+[2026-06-15T17:15:16.326Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T17:18:29.356Z] Aguardando conexao: Erro interno
+[2026-06-15T17:18:33.454Z] Comando recebido: catraca-1781543909681-11f237 | marcos andre souza
+[2026-06-15T17:18:36.254Z] OK: Exce��o ao chamar "SetFocus" com "0" argumento(s): "O elemento de destino n�o pode receber o foco."
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:56 caractere:1
++ $window.SetFocus()
++ ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [], MethodInvocationException
+    + FullyQualifiedErrorId : InvalidOperationException
+ 
+Exce��o ao chamar "GetCurrentPattern" com "1" argumento(s): "Padr�o sem-suporte."
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:38 caractere:3
++   $pattern = $Control.GetCurrentPattern([System.Windows.Automation.In ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [], MethodInvocationException
+    + FullyQualifiedErrorId : InvalidOperationException
+ 
+N�o � poss�vel chamar um m�todo em uma express�o de valor nulo.
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:39 caractere:3
++   $pattern.Invoke()
++   ~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+ 
+Clique no botao Enviar enviado pela tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T17:22:32.182Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T17:23:43.548Z] Comando recebido: catraca-1781544220892-12d962 | Marcos André de Souza 
+[2026-06-15T17:23:48.139Z] FALHA: Janela da Henry nao encontrada. Abra a tela 'Liberacao de Catraca - [catra-site]' e deixe ela aberta.
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:21 caractere:3
++   throw "Janela da Henry nao encontrada. Abra a tela 'Liberacao de Ca ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Janela da Henry...ixe ela aberta.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Janela da Henry nao encontrada. Abra a tela 'Liberacao de Catraca - [catra-site]' e deix 
+   e ela aberta.
+[2026-06-15T17:24:20.641Z] Aguardando conexao: Erro interno
+[2026-06-15T17:24:24.551Z] Comando recebido: catraca-1781544260786-37b0d3 | Marcos André de Souza 
+[2026-06-15T17:24:29.137Z] FALHA: Janela da Henry nao encontrada. Abra a tela 'Liberacao de Catraca - [catra-site]' e deixe ela aberta.
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:21 caractere:3
++   throw "Janela da Henry nao encontrada. Abra a tela 'Liberacao de Ca ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Janela da Henry...ixe ela aberta.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Janela da Henry nao encontrada. Abra a tela 'Liberacao de Catraca - [catra-site]' e deix 
+   e ela aberta.
+[2026-06-15T17:25:04.756Z] Comando recebido: catraca-1781544303390-38695d | Marcos André de Souza 
+[2026-06-15T17:25:09.144Z] FALHA: Janela da Henry nao encontrada. Abra a tela 'Liberacao de Catraca - [catra-site]' e deixe ela aberta.
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:21 caractere:3
++   throw "Janela da Henry nao encontrada. Abra a tela 'Liberacao de Ca ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Janela da Henry...ixe ela aberta.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Janela da Henry nao encontrada. Abra a tela 'Liberacao de Catraca - [catra-site]' e deix 
+   e ela aberta.
+[2026-06-15T17:25:48.443Z] Comando recebido: catraca-1781544345692-4e5162 | Marcos André de Souza 
+[2026-06-15T17:25:53.147Z] FALHA: Janela da Henry nao encontrada. Abra a tela 'Liberacao de Catraca - [catra-site]' e deixe ela aberta.
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:21 caractere:3
++   throw "Janela da Henry nao encontrada. Abra a tela 'Liberacao de Ca ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Janela da Henry...ixe ela aberta.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Janela da Henry nao encontrada. Abra a tela 'Liberacao de Catraca - [catra-site]' e deix 
+   e ela aberta.
+[2026-06-15T17:28:46.992Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T17:29:30.835Z] Comando recebido: catraca-1781544568587-db6b43 | marcos andre souza
+[2026-06-15T17:29:34.632Z] FALHA: Programa Henry7x nao encontrado. Abra a tela 'Liberacao de Catraca - [catra-site]' e deixe ela aberta.
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:39 caractere:3
++   throw "Programa Henry7x nao encontrado. Abra a tela 'Liberacao de C ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Programa Henry7...ixe ela aberta.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Programa Henry7x nao encontrado. Abra a tela 'Liberacao de Catraca - [catra-site]' e dei 
+   xe ela aberta.
+[2026-06-15T17:30:07.638Z] Comando recebido: catraca-1781544605381-bbe222 | marcos andre souza
+[2026-06-15T17:30:11.045Z] FALHA: Programa Henry7x nao encontrado. Abra a tela 'Liberacao de Catraca - [catra-site]' e deixe ela aberta.
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:39 caractere:3
++   throw "Programa Henry7x nao encontrado. Abra a tela 'Liberacao de C ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Programa Henry7...ixe ela aberta.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Programa Henry7x nao encontrado. Abra a tela 'Liberacao de Catraca - [catra-site]' e dei 
+   xe ela aberta.
+[2026-06-15T17:39:18.225Z] Comando recebido: catraca-1781545155592-3a292a | Marcos André de Souza 
+[2026-06-15T17:39:21.935Z] FALHA: Programa Henry7x nao encontrado. Abra a tela 'Liberacao de Catraca - [catra-site]' e deixe ela aberta.
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:39 caractere:3
++   throw "Programa Henry7x nao encontrado. Abra a tela 'Liberacao de C ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Programa Henry7...ixe ela aberta.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Programa Henry7x nao encontrado. Abra a tela 'Liberacao de Catraca - [catra-site]' e dei 
+   xe ela aberta.
+[2026-06-15T17:39:51.233Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T17:39:59.434Z] Comando recebido: catraca-1781545197194-9f35cd | Marcos André de Souza 
+[2026-06-15T17:40:03.125Z] FALHA: Programa Henry7x nao encontrado. Abra a tela 'Liberacao de Catraca - [catra-site]' e deixe ela aberta.
+No C:\Users\academia01\Documents\Codex\2026-06-11\tenho-um-site-gratuito-na-wix\outputs\fusion-online-server\catraca-co
+nnector\henry-ui-release.ps1:39 caractere:3
++   throw "Programa Henry7x nao encontrado. Abra a tela 'Liberacao de C ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Programa Henry7...ixe ela aberta.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Programa Henry7x nao encontrado. Abra a tela 'Liberacao de Catraca - [catra-site]' e dei 
+   xe ela aberta.
+[2026-06-15T17:48:05.141Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T17:48:16.613Z] Comando recebido: catraca-1781545694189-82bf86 | marcos andre souza
+[2026-06-15T17:48:21.914Z] OK: Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T17:49:44.207Z] Aguardando conexao: Erro interno
+[2026-06-15T17:49:48.198Z] Comando recebido: catraca-1781545784384-21174d | Marcos André de Souza 
+[2026-06-15T17:49:52.599Z] OK: Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T17:49:56.399Z] Comando recebido: catraca-1781545790388-e397bc | Marcos André de Souza 
+[2026-06-15T17:49:59.797Z] OK: Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T17:53:37.621Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T17:54:08.697Z] Aguardando conexao: Erro interno
+[2026-06-15T17:54:12.603Z] Comando recebido: catraca-1781546048684-80bc46 | Marcos André de Souza 
+[2026-06-15T17:54:16.497Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T17:54:30.198Z] Aguardando conexao: Erro interno
+[2026-06-15T17:54:34.442Z] Comando recebido: catraca-1781546070287-a4433b | Marcos André de Souza 
+[2026-06-15T17:54:38.387Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:43:01.114Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T18:43:02.185Z] Aguardando conexao: HTTP 404
+[2026-06-15T18:43:05.858Z] Comando recebido: catraca-1781548958307-33711a | marcos andre souza
+[2026-06-15T18:43:09.145Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:43:21.550Z] Aguardando conexao: Erro interno
+[2026-06-15T18:43:24.756Z] Comando recebido: catraca-1781549002316-b9db75 | Marcos André de Souza 
+[2026-06-15T18:43:27.745Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:43:49.043Z] Comando recebido: catraca-1781549028010-3107bd | Marcos André de Souza 
+[2026-06-15T18:43:51.957Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:44:01.442Z] Comando recebido: catraca-1781549039912-7e5003 | Marcos André de Souza 
+[2026-06-15T18:44:04.347Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:44:07.342Z] Aguardando conexao: HTTP 404
+[2026-06-15T18:44:22.649Z] Comando recebido: catraca-1781549062416-0fba32 | Marcos André de Souza 
+[2026-06-15T18:44:25.541Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:44:40.748Z] Comando recebido: catraca-1781549079911-5721af | Marcos André de Souza 
+[2026-06-15T18:44:43.647Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:44:50.044Z] Comando recebido: catraca-1781549090012-adb20c | Marcos André de Souza 
+[2026-06-15T18:44:52.846Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:45:05.237Z] Comando recebido: catraca-1781549103816-e3a0d5 | Marcos André de Souza 
+[2026-06-15T18:45:08.149Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:45:11.238Z] Aguardando conexao: HTTP 404
+[2026-06-15T18:45:14.640Z] Comando recebido: catraca-1781549113914-7a9cd7 | Marcos André de Souza 
+[2026-06-15T18:45:17.540Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:45:26.841Z] Comando recebido: catraca-1781549125611-3c397a | Marcos André de Souza 
+[2026-06-15T18:45:29.742Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:45:35.540Z] Aguardando conexao: Erro interno
+[2026-06-15T18:45:38.842Z] Comando recebido: catraca-1781549136415-17c021 | Marcos André de Souza 
+[2026-06-15T18:45:41.843Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:45:51.645Z] Comando recebido: catraca-1781549151118-e6fb86 | Marcos André de Souza 
+[2026-06-15T18:45:54.542Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:46:12.638Z] Aguardando conexao: HTTP 404
+[2026-06-15T18:46:16.145Z] Comando recebido: catraca-1781549173111-d60b3b | Marcos André de Souza 
+[2026-06-15T18:46:19.145Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:46:31.347Z] Comando recebido: catraca-1781549190409-14867a | Marcos André de Souza 
+[2026-06-15T18:46:34.541Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:46:41.049Z] Comando recebido: catraca-1781549200612-56cbcf | Marcos André de Souza 
+[2026-06-15T18:46:43.948Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:50:51.720Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T18:50:52.608Z] Aguardando conexao: HTTP 404
+[2026-06-15T18:50:56.103Z] Comando recebido: catraca-1781549403019-f9cfc9 | Marcos André de Souza 
+[2026-06-15T18:50:58.066Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T18:50:59.132Z] Aguardando conexao: HTTP 404
+[2026-06-15T18:51:00.107Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:51:00.108Z] Comando recebido: catraca-1781549412817-d1c2f7 | Marcos André de Souza 
+[2026-06-15T18:51:03.143Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T18:54:34.818Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T18:54:35.912Z] Aguardando conexao: HTTP 404
+[2026-06-15T18:55:36.498Z] Aguardando conexao: HTTP 404
+[2026-06-15T18:56:37.393Z] Aguardando conexao: HTTP 404
+[2026-06-15T18:57:38.388Z] Aguardando conexao: HTTP 404
+[2026-06-15T19:06:07.540Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T19:06:08.465Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:07:10.347Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:08:11.957Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:09:13.838Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:10:14.239Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:11:14.940Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:12:15.933Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:14:13.380Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T19:14:14.499Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:15:14.577Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:16:03.676Z] Aguardando conexao: Erro interno
+[2026-06-15T19:16:06.886Z] Comando recebido: catraca-1781550963915-927df3 | ANA PATRICIA OLIVEIRA DA SILVA
+[2026-06-15T19:16:10.085Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T19:16:16.178Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:16:25.898Z] Comando recebido: catraca-1781550984118-b98d99 | ANA PATRICIA OLIVEIRA DA SILVA
+[2026-06-15T19:16:28.775Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T19:17:14.081Z] Comando recebido: catraca-1781551032908-d23483 | ANA PATRICIA OLIVEIRA DA SILVA
+[2026-06-15T19:17:17.508Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T19:17:20.481Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:17:59.532Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T19:18:00.201Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:18:21.078Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:19:00.975Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:19:23.876Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:19:27.588Z] Comando recebido: catraca-1781551166506-195f96 | ANA PATRICIA OLIVEIRA DA SILVA
+[2026-06-15T19:19:30.671Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T19:19:43.181Z] Comando recebido: catraca-1781551181715-dec097 | ANA PATRICIA OLIVEIRA DA SILVA
+[2026-06-15T19:19:46.374Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T19:19:58.870Z] Aguardando conexao: Erro interno
+[2026-06-15T19:20:02.081Z] Comando recebido: catraca-1781551199107-d4e381 | ANA PATRICIA OLIVEIRA DA SILVA
+[2026-06-15T19:20:05.176Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T19:20:26.378Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:21:26.575Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:22:26.978Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:23:21.770Z] Aguardando conexao: Erro interno
+[2026-06-15T19:23:25.064Z] Comando recebido: catraca-1781551402011-c3ff9c | ANA PATRICIA OLIVEIRA DA SILVA
+[2026-06-15T19:23:27.974Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T19:23:30.977Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:23:34.765Z] Comando recebido: catraca-1781551412710-c58112 | ANA PATRICIA OLIVEIRA DA SILVA
+[2026-06-15T19:23:37.670Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T19:23:46.971Z] Comando recebido: catraca-1781551424714-e78ee0 | ANA PATRICIA OLIVEIRA DA SILVA
+[2026-06-15T19:23:49.876Z] OK: Clique/Enter enviado para a tela Henry7x. Confira se a janela estava marcada como 30 segundos e Ambos os lados.
+[2026-06-15T19:24:31.869Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:25:34.361Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:26:34.665Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:27:35.166Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:28:35.466Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:29:35.664Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:32:25.797Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: henry-ui
+[2026-06-15T19:32:26.778Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:33:28.752Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:34:30.260Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:35:31.454Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:36:32.147Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:37:33.760Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:38:34.453Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:39:36.740Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:40:36.736Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:41:38.545Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:42:39.747Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:43:41.336Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:44:42.032Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:45:42.940Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:46:44.235Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:47:45.435Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:48:46.124Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:49:48.030Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:50:00.323Z] Aguardando conexao: HTTP 502
+[2026-06-15T19:50:03.013Z] Aguardando conexao: HTTP 503
+[2026-06-15T19:50:05.701Z] Aguardando conexao: HTTP 503
+[2026-06-15T19:50:50.711Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:51:51.507Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:52:52.613Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:53:53.610Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:54:54.307Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:55:54.912Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:56:55.613Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:57:56.108Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:58:56.603Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T19:59:57.409Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:00:58.600Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:02:00.097Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:03:00.795Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:04:01.799Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:05:03.088Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:06:04.090Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:07:04.793Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:08:04.990Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:09:06.284Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:10:06.989Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:11:07.877Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:12:08.781Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:13:09.678Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:14:10.878Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:15:11.879Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:16:12.268Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:17:12.971Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:18:13.976Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:19:32.727Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:20:16.266Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:21:18.066Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:22:18.461Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:23:20.767Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:24:21.666Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:25:22.256Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:26:23.059Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:27:24.053Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:28:24.956Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:29:25.850Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:30:26.749Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:31:26.754Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:32:27.044Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:33:27.638Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:34:28.042Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:35:28.343Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:36:29.438Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:37:29.744Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:38:30.838Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:39:31.435Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:40:32.233Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:45:39.691Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: online2-dll
+[2026-06-15T20:45:40.458Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:46:41.834Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:47:24.327Z] Aguardando conexao: Erro interno
+[2026-06-15T20:47:27.739Z] Comando recebido: catraca-1781556444606-b3bb97 | marcos andre souza
+[2026-06-15T20:47:28.829Z] OK: {"ok":true,"active":1,"parameters":1,"open":0,"liberate":1,"idEquipamento":1,"sentidoGiro":1}
+[2026-06-15T20:47:35.125Z] Aguardando conexao: Erro interno
+[2026-06-15T20:47:38.435Z] Comando recebido: catraca-1781556455406-c0e7b5 | marcos andre souza
+[2026-06-15T20:47:39.336Z] OK: {"ok":true,"active":1,"parameters":1,"open":0,"liberate":1,"idEquipamento":1,"sentidoGiro":1}
+[2026-06-15T20:47:42.321Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:47:46.125Z] Comando recebido: catraca-1781556464898-48a984 | marcos andre souza
+[2026-06-15T20:47:47.238Z] OK: {"ok":true,"active":1,"parameters":1,"open":0,"liberate":1,"idEquipamento":1,"sentidoGiro":1}
+[2026-06-15T20:48:44.528Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:49:16.423Z] Aguardando conexao: HTTP 502
+[2026-06-15T20:49:19.114Z] Aguardando conexao: HTTP 503
+[2026-06-15T20:49:21.805Z] Aguardando conexao: HTTP 503
+[2026-06-15T20:49:24.652Z] Aguardando conexao: HTTP 502
+[2026-06-15T20:49:45.720Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:50:46.612Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:50:59.019Z] Aguardando conexao: Erro interno
+[2026-06-15T20:51:02.416Z] Comando recebido: catraca-1781556659292-7b7c7d | marcos andre souza
+[2026-06-15T20:51:03.521Z] OK: {"ok":true,"active":1,"parameters":1,"open":0,"liberate":1,"idEquipamento":1,"sentidoGiro":1}
+[2026-06-15T20:51:48.505Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-15T20:52:48.711Z] Lista offline ainda nao sincronizada: HTTP 404
