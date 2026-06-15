@@ -15,9 +15,9 @@ Como funciona:
 4. O resultado volta para o painel admin.
 
 Modo atual:
-- driver.mode = dry-run
-- Neste modo ele NAO aciona fisicamente a catraca.
-- Ele apenas confirma que recebeu o comando.
+- driver.mode = online2-dll
+- Neste modo ele usa a DLL Online2.dll do SCA/Henry com Node 32 bits.
+- Este modo nao depende da tela "Liberacao de Catraca" ficar aberta.
 
 Para testar:
 1. Abra config.json.
@@ -44,13 +44,40 @@ O arquivo BIOMETRIA-MANUAL-TESTE.bat e temporario para testar a regra.
 Depois podemos trocar pelo leitor biometrico real instalado no computador.
 
 Para liberar fisicamente:
-- Precisamos configurar o comando correto da Henry 7x.
+- Hoje o modo recomendado e online2-dll, usando C:\PROSISTEMAS\SCA\Online2.dll.
+- O modo henry-ui continua existindo como plano reserva, usando a tela do Henry7x.
+- Para liberar sem depender da tela do Henry aberta, precisamos do comando hexadecimal oficial da Henry 7x Card II firmware 7105.
 - Quando o comando TCP ou SDK for confirmado, mudar driver.mode para tcp-raw ou program.
 
 Modos suportados:
 - dry-run: teste seguro, nao abre a catraca.
 - tcp-raw: envia bytes em hexadecimal para 10.0.0.236:3000.
 - program: chama um programa local com argumentos configurados.
+- henry-ui: usa a janela "Liberacao de Catraca" do programa Henry7x.
+- online2-dll: chama C:\PROSISTEMAS\SCA\Online2.dll por C:\Node32\node.exe.
+
+INFORMACAO PARA O SUPORTE HENRY
+
+Linguagem do nosso sistema:
+- JavaScript / Node.js no conector local.
+
+Primeiro objetivo:
+- Liberar o giro/acionar o rele remotamente pela rede TCP/IP.
+
+Segundo objetivo:
+- Depois receber eventos de leitura/acesso em tempo real, se o protocolo permitir.
+
+Dados da catraca:
+- Henry 7x Card II
+- Firmware 7105
+- IP 10.0.0.236
+- Porta 3000
+
+Pedir ao suporte:
+- SDK, DLL ou Manual de Integracao/Protocolo TCP-IP.
+- Comando de liberacao do rele/catraca em hexadecimal.
+- Como calcular checksum do frame.
+- Se existe Web Server/API interna para liberar giro por HTTP.
 
 Importante:
 Nao desligue o SCA sem confirmar, porque ele ja controla a catraca hoje.
