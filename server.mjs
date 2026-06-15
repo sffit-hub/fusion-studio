@@ -1350,7 +1350,7 @@ function adminPage() {
       return '<div class="stats"><article class="stat"><span>Total recebido</span><strong>' + money(totals.total) + '</strong><small>Todos os pagamentos</small></article><article class="stat"><span>Dinheiro</span><strong>' + money(totals.dinheiro) + '</strong><small>Entrada registrada</small></article><article class="stat"><span>Pix</span><strong>' + money(totals.pix) + '</strong><small>Entrada registrada</small></article><article class="stat"><span>Cartao debito</span><strong>' + money(totals.debito) + '</strong><small>Entrada registrada</small></article><article class="stat"><span>Cartao credito</span><strong>' + money(totals.credito) + '</strong><small>Entrada registrada</small></article></div>';
     }
     function render() {
-      app.innerHTML = '<header class="admin-top"><a class="brand" href="/"><span class="brand-mark">FCF</span><span>Painel da academia</span></a><div class="admin-status"><strong>' + data.students.length + '</strong><span>alunos cadastrados</span></div></header>' +
+      app.innerHTML = '<header class="admin-top"><a class="brand" href="/"><span class="brand-mark">FCF</span><span>Painel da academia</span></a><div class="admin-header-actions"><div class="admin-status"><strong>' + data.students.length + '</strong><span>alunos cadastrados</span></div><button class="button neutral" id="logoutAdmin">Sair</button></div></header>' +
         '<div id="toast" class="toast" hidden></div>' +
         '<section class="admin-hero"><div><p class="eyebrow dark">Area administrativa</p><h1>Gestao da academia</h1><p>Cadastros, acessos, planos, pagamentos e bloqueios em um painel separado da area do aluno.</p></div><button class="button primary" id="openNewStudent">Novo cadastro</button></section>' +
         '<nav class="module-bar"><a href="#alunos">Alunos</a><a href="#caixa">Caixa</a><a href="#usuarios">Usuarios</a><a href="#presencas">Presencas</a><a href="#acessos">Acessos</a><a href="#relatorios">Relatorios</a></nav>' +
@@ -1368,6 +1368,10 @@ function adminPage() {
       const drawer = document.getElementById('studentDrawer');
       const backdrop = document.getElementById('drawerBackdrop');
       const toast = document.getElementById('toast');
+      document.getElementById('logoutAdmin').addEventListener('click', () => {
+        pass.value = '';
+        location.href = '/admin';
+      });
       function showToast(message) {
         toast.textContent = message;
         toast.hidden = false;
