@@ -1331,7 +1331,8 @@ function adminPage() {
         '<section class="panel admin-module" id="presencas"><h2>Presencas por foto facial</h2><p class="empty">Abra /presenca no celular do aluno conectado ao Wi-Fi para registrar entrada.</p><div id="attendanceRows" class="admin-list">' + renderAttendanceList() + '</div></section>' +
         '<section class="panel admin-module" id="acessos"><h2>Professores e admins</h2><div id="professorRows" class="admin-list"></div><div id="adminRows" class="admin-list"></div></section>' +
         '<section class="panel admin-module report-preview" id="relatorios"><h2>Relatorios e proximos modulos</h2><div class="module-grid"><article>Controle de turmas</article><article>Caixa e vendas</article><article>Estoque</article><article>Check-in</article><article>Contratos</article><article>WhatsApp</article></div></section>' +
-        '<aside id="studentDrawer" class="side-drawer" aria-hidden="true"><div class="drawer-head"><h2 id="drawerTitle">Editar cadastro</h2><button class="button neutral" id="closeDrawer">Fechar</button></div><div id="editStudentPanel"></div></aside><div id="drawerBackdrop" class="drawer-backdrop" hidden></div>';
+        '<aside id="studentDrawer" class="side-drawer" aria-hidden="true"><div class="drawer-head"><h2 id="drawerTitle">Editar cadastro</h2><button class="button neutral" id="closeDrawer">Fechar</button></div><div id="editStudentPanel"></div></aside><div id="drawerBackdrop" class="drawer-backdrop" hidden></div>' +
+        '<div id="paymentBackdrop" class="drawer-backdrop" hidden></div><section id="paymentPopup" class="payment-popup" aria-hidden="true"><div class="drawer-head"><h2>Confirmar pagamento</h2><button class="button neutral" id="closePaymentPopup">Fechar</button></div><form id="paymentPopupForm" class="editor-form"><p id="paymentPopupStudent" class="payment-popup-student"></p><input name="source" type="hidden" value="matricula"><input name="studentId" type="hidden"><label>Plano<select name="planId">' + planOptions(data.plans[0]?.id) + '</select></label><label>Valor pago<input name="amount" type="number" step="0.01" required></label><label>Forma de pagamento<select name="method"><option value="dinheiro">Dinheiro</option><option value="pix">Pix</option><option value="debito">Cartao de debito</option><option value="credito">Cartao de credito</option></select></label><label>Mes pago<input name="paidMonth" type="month"></label><label>Proximo vencimento automatico<input name="nextDue" type="date" readonly></label><button class="button primary" type="submit">Confirmar pagamento e ativar</button></form></section>';
       wire();
     }
     function wire() {
@@ -1353,6 +1354,44 @@ function adminPage() {
         drawer.classList.remove('open');
         drawer.setAttribute('aria-hidden', 'true');
         backdrop.hidden = true;
+      }
+      const paymentPopup = document.getElementById('paymentPopup');
+      const paymentBackdrop = document.getElementById('paymentBackdrop');
+      const paymentPopupForm = document.getElementById('paymentPopupForm');
+      function closePaymentPopup() {
+        paymentPopup.classList.remove('open');
+        paymentPopup.setAttribute('aria-hidden', 'true');
+        paymentBackdrop.hidden = true;
+      }
+      function planById(id) { return data.plans.find((item) => item.id === id); }
+      function monthsForPlanType(type) {
+        return type === 'trimestral' ? 3 : type === 'semestral' ? 6 : type === 'anual' ? 12 : type === 'diarista' ? 0 : 1;
+      }
+      function nextDueFromToday(plan) {
+        const date = new Date();
+        if (plan?.type === 'diarista') date.setDate(date.getDate() + 1);
+        else date.setMonth(date.getMonth() + monthsForPlanType(plan?.type));
+        return date.toISOString().slice(0, 10);
+      }
+      function fillPaymentPopup(studentId, source = 'matricula') {
+        const student = data.students.find((item) => item.id === studentId);
+        if (!student) return;
+        const planId = student.planId || data.plans[0]?.id || '';
+        const plan = planById(planId);
+        paymentPopupForm.source.value = source;
+        paymentPopupForm.studentId.value = student.id;
+        paymentPopupForm.planId.value = planId;
+        paymentPopupForm.amount.value = plan ? Number(plan.price || 0).toFixed(2) : '';
+        paymentPopupForm.method.value = 'pix';
+        paymentPopupForm.paidMonth.value = new Date().toISOString().slice(0, 7);
+        paymentPopupForm.nextDue.value = nextDueFromToday(plan);
+        document.getElementById('paymentPopupStudent').innerHTML = '<strong>' + safe(student.name) + '</strong><span>' + (plan ? safe(plan.name) + ' | ' + money(plan.price) : 'Plano nao informado') + '</span>';
+      }
+      function openPaymentPopup(studentId, source = 'matricula') {
+        fillPaymentPopup(studentId, source);
+        paymentPopup.classList.add('open');
+        paymentPopup.setAttribute('aria-hidden', 'false');
+        paymentBackdrop.hidden = false;
       }
       function fileToDataUrl(file) {
         return new Promise((resolve) => {
@@ -1431,6 +1470,28 @@ function adminPage() {
       }
       document.getElementById('closeDrawer').addEventListener('click', closeDrawer);
       backdrop.addEventListener('click', closeDrawer);
+      document.getElementById('closePaymentPopup').addEventListener('click', closePaymentPopup);
+      paymentBackdrop.addEventListener('click', closePaymentPopup);
+      paymentPopupForm.planId.addEventListener('change', () => {
+        const plan = planById(paymentPopupForm.planId.value);
+        paymentPopupForm.amount.value = plan ? Number(plan.price || 0).toFixed(2) : '';
+        paymentPopupForm.nextDue.value = nextDueFromToday(plan);
+      });
+      paymentPopupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const body = Object.fromEntries(new FormData(e.currentTarget).entries());
+        const res = await api('/api/admin/payments', { method: 'POST', body: JSON.stringify(body) });
+        if (res.ok) {
+          await refresh();
+          draw();
+          drawAccess();
+          document.getElementById('cashRows').innerHTML = renderCashList();
+          closePaymentPopup();
+          showToast('Pagamento confirmado e cadastro ativado.');
+        } else {
+          alert((await res.json().catch(() => ({}))).error || 'Nao foi possivel confirmar o pagamento.');
+        }
+      });
       document.getElementById('openNewStudent').addEventListener('click', () => {
         editPanel.innerHTML = studentCadastroForm();
         openDrawer('Cadastrar aluno');
@@ -1443,7 +1504,14 @@ function adminPage() {
             return;
           }
           const res = await api('/api/admin/student', { method: 'POST', body: JSON.stringify(body) });
-          if (res.ok) { await refresh(); draw(); closeDrawer(); showToast('Cadastro salvo.'); }
+          if (res.ok) {
+            const created = await res.json();
+            await refresh();
+            draw();
+            closeDrawer();
+            openPaymentPopup(created.id, 'matricula');
+            showToast('Cadastro salvo. Confirme o pagamento para ativar.');
+          }
         });
       });
       document.getElementById('adminForm').addEventListener('submit', async (e) => {
@@ -1571,17 +1639,9 @@ function adminPage() {
           if (res.ok) { await refresh(); draw(); drawAccess(); closeDrawer(); showToast('Aluno movido para excluidos.'); }
         });
         editPanel.querySelector('[data-pay-activate-student]')?.addEventListener('click', () => {
-          const paymentForm = document.getElementById('paymentForm');
-          if (paymentForm) {
-            paymentForm.source.value = 'matricula';
-            paymentForm.studentId.value = s.id;
-            paymentForm.planId.value = s.planId || data.plans[0]?.id || '';
-            const plan = data.plans.find((item) => item.id === paymentForm.planId.value);
-            paymentForm.amount.value = plan ? Number(plan.price || 0).toFixed(2) : '';
-          }
           closeDrawer();
-          location.hash = '#caixa';
-          showToast('Lance o pagamento no Caixa para ativar o aluno.');
+          openPaymentPopup(s.id, 'matricula');
+          showToast('Confira os dados e confirme o pagamento.');
         });
       }
       function draw() {
