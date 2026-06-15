@@ -244,9 +244,54 @@ function nextRegistration(db) {
   return String((numbers.length ? Math.max(...numbers) : 0) + 1).padStart(5, "0");
 }
 
+function normalizeBirthDate(value, ageHint = "") {
+  const digits = onlyDigits(value);
+  if (digits.length < 6) return String(value || "");
+  const day = digits.slice(0, 2);
+  const month = digits.slice(2, 4);
+  let year = digits.slice(4);
+  if (year.length === 2) {
+    const currentYear = new Date().getFullYear();
+    const age = Number(ageHint || 0);
+    if (age >= 0 && age < 130) {
+      const candidates = [];
+      for (let candidate = currentYear - age - 1; candidate <= currentYear - age + 1; candidate += 1) candidates.push(String(candidate));
+      const byAge = candidates.find((candidate) => {
+        const candidateDate = `${day}/${month}/${candidate}`;
+        return calculateAgeFromBirthDate(candidateDate) === String(age) && (candidate.startsWith(year) || candidate.endsWith(year));
+      });
+      year = byAge || (String(currentYear - age).slice(0, 2) + year);
+    } else {
+      const yy = Number(year);
+      year = yy > Number(String(currentYear).slice(2)) ? "19" + year : "20" + year;
+    }
+  }
+  if (year.length !== 4) return String(value || "");
+  const formatted = `${day}/${month}/${year}`;
+  return calculateAgeFromBirthDate(formatted) ? formatted : String(value || "");
+}
+
+function calculateAgeFromBirthDate(value) {
+  const parts = String(value || "").split("/");
+  if (parts.length !== 3) return "";
+  const day = Number(parts[0]);
+  const month = Number(parts[1]);
+  const year = Number(parts[2]);
+  if (!day || !month || !year || year < 1900) return "";
+  const birth = new Date(year, month - 1, day);
+  if (birth.getDate() !== day || birth.getMonth() !== month - 1 || birth.getFullYear() !== year) return "";
+  const today = new Date();
+  let age = today.getFullYear() - year;
+  const birthdayThisYear = new Date(today.getFullYear(), month - 1, day);
+  if (today < birthdayThisYear) age -= 1;
+  return age >= 0 && age < 130 ? String(age) : "";
+}
+
 function buildStudent(db, body) {
   const slug = uniqueSlug(db, body.name || "Aluno");
   const plan = db.plans.find((item) => item.id === body.planId);
+  const birthDate = normalizeBirthDate(body.birthDate, body.age);
+  const age = body.age || calculateAgeFromBirthDate(birthDate);
   return {
     id: slug,
     slug,
@@ -266,8 +311,8 @@ function buildStudent(db, body) {
     identity: body.identity || "",
     identityState: body.identityState || "",
     email: body.email || "",
-    birthDate: body.birthDate || "",
-    age: body.age || "",
+    birthDate,
+    age,
     situation: body.situation || "Ativo",
     debit: body.debit || "",
     registrationNotes: body.registrationNotes || "",
@@ -583,13 +628,18 @@ function enrollmentPage(db) {
       if (today < birthdayThisYear) age -= 1;
       return age >= 0 && age < 130 ? String(age) : '';
     }
-    form.birthDate.addEventListener('input', () => {
+    function syncBirthDateAge() {
       let value = form.birthDate.value.replace(/\\D/g, '').slice(0, 8);
       if (value.length > 4) value = value.replace(/(\\d{2})(\\d{2})(\\d{1,4})/, '$1/$2/$3');
       else if (value.length > 2) value = value.replace(/(\\d{2})(\\d{1,2})/, '$1/$2');
       form.birthDate.value = value;
       form.age.value = calculateAge(value);
-    });
+    }
+    form.birthDate.addEventListener('input', syncBirthDateAge);
+    form.birthDate.addEventListener('keyup', syncBirthDateAge);
+    form.birthDate.addEventListener('change', syncBirthDateAge);
+    form.birthDate.addEventListener('blur', syncBirthDateAge);
+    form.birthDate.addEventListener('paste', () => setTimeout(syncBirthDateAge, 0));
     function setPhoto(value) {
       photo = value || '';
       preview.innerHTML = photo ? '<img src="' + photo + '" alt="Foto capturada">' : '<span>Sem foto</span>';
@@ -2053,6 +2103,10 @@ const server = http.createServer(async (req, res) => {
       }
       Object.assign(student, body);
       if (body.cpf !== undefined) student.cpf = onlyDigits(body.cpf);
+      if (body.birthDate !== undefined) {
+        student.birthDate = normalizeBirthDate(body.birthDate, body.age);
+        student.age = body.age || calculateAgeFromBirthDate(student.birthDate);
+      }
       student.plan = plan?.name || student.plan || "";
       await saveDb(db);
       return json(res, 200, student);
