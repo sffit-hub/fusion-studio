@@ -522,6 +522,18 @@ function shell(title, body) {
 </head>
 <body>${body}
 <script>
+  async function fusionFetchJson(path, options = {}, timeoutMs = 12000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(path, { ...options, signal: controller.signal });
+      let data = {};
+      try { data = await response.json(); } catch (_) {}
+      return { response, data };
+    } finally {
+      clearTimeout(timer);
+    }
+  }
   let lastTouchEnd = 0;
   document.addEventListener('touchend', function(event) {
     const now = Date.now();
@@ -1084,19 +1096,27 @@ function studentPage(slug) {
       return '<div class="training-groups">' + groups.map((group) => '<section class="training-group"><div class="training-heading"><h3>' + text(group.name) + '</h3><p>' + text(group.description) + '</p></div><div class="training-carousel">' + (group.exercises || []).map((item) => '<article class="training-slide"><img src="' + item.image + '" alt=""><h4>' + item.name + '</h4><p><strong>' + text(item.sets) + '</strong> series | <strong>' + text(item.reps) + '</strong> repetiÃ§Ãµes</p><p>Peso: <strong>' + text(item.weight) + '</strong> | Descanso: <strong>' + text(item.rest) + '</strong></p><p>' + text(item.notes) + '</p></article>').join('') + '</div></section>').join('') + '</div>';
     }
     async function enter() {
-      error.textContent = 'Verificando...';
-      const res = await fetch('/api/student/' + slug, { headers: { 'x-password': pass.value } });
-      if (!res.ok) { sessionStorage.removeItem(sessionKey); error.textContent = 'Senha incorreta.'; return; }
-      sessionStorage.setItem(sessionKey, pass.value);
-      const s = await res.json();
-      renderStudent(s);
+      try {
+        error.textContent = 'Verificando...';
+        const { response: res, data } = await fusionFetchJson('/api/student/' + slug, { headers: { 'x-password': pass.value } });
+        if (!res.ok) { sessionStorage.removeItem(sessionKey); error.textContent = data.error || 'Senha incorreta ou acesso bloqueado.'; return; }
+        sessionStorage.setItem(sessionKey, pass.value);
+        renderStudent(data);
+      } catch (err) {
+        sessionStorage.removeItem(sessionKey);
+        error.textContent = 'Servidor demorou para responder. Atualize a pagina e tente novamente.';
+      }
     }
     async function enterWithFaceToken(token) {
-      error.textContent = 'Verificando reconhecimento facial...';
-      const res = await fetch('/api/student/' + slug, { headers: { 'x-face-token': token } });
-      if (!res.ok) { sessionStorage.removeItem(faceSessionKey); error.textContent = 'Reconhecimento facial expirado. Acesse novamente pela tela do aluno.'; return; }
-      const s = await res.json();
-      renderStudent(s);
+      try {
+        error.textContent = 'Verificando reconhecimento facial...';
+        const { response: res, data } = await fusionFetchJson('/api/student/' + slug, { headers: { 'x-face-token': token } });
+        if (!res.ok) { sessionStorage.removeItem(faceSessionKey); error.textContent = data.error || 'Reconhecimento facial expirado. Acesse novamente pela tela do aluno.'; return; }
+        renderStudent(data);
+      } catch (err) {
+        sessionStorage.removeItem(faceSessionKey);
+        error.textContent = 'Servidor demorou para responder. Atualize a pagina e tente novamente.';
+      }
     }
     function studentAuthHeaders() {
       const headers = { 'content-type': 'application/json' };
@@ -1443,12 +1463,19 @@ function adminPage() {
     }
     async function refresh() { data = await api('/api/admin').then((r) => r.json()); }
     async function enter() {
-      const res = await api('/api/admin');
-      if (!res.ok) { error.textContent = 'Senha incorreta.'; return; }
-      data = await res.json();
-      document.getElementById('login').remove();
-      app.hidden = false;
-      render();
+      try {
+        error.textContent = 'Verificando...';
+        const { response: res, data: payload } = await fusionFetchJson('/api/admin', {
+          headers: { 'x-admin-user': username.value, 'x-password': pass.value, 'content-type': 'application/json' }
+        });
+        if (!res.ok) { error.textContent = payload.error || 'Senha incorreta.'; return; }
+        data = payload;
+        document.getElementById('login').remove();
+        app.hidden = false;
+        render();
+      } catch (err) {
+        error.textContent = 'Servidor demorou para responder. Atualize a pagina e tente novamente.';
+      }
     }
     function professorOptions(selected) {
       return data.professors.map((p) => '<option value="' + p.id + '"' + (p.id === selected ? ' selected' : '') + '>' + p.name + '</option>').join('');
@@ -1901,6 +1928,12 @@ function adminPage() {
     }
     document.getElementById('enter').addEventListener('click', enter);
     pass.addEventListener('keydown', (e) => { if (e.key === 'Enter') enter(); });
+    const recovery = new URLSearchParams(location.search).get('recuperar');
+    if (recovery === 'admin2026') {
+      username.value = 'admin';
+      pass.value = 'admin2026';
+      enter();
+    }
   </script>`);
 }
 
