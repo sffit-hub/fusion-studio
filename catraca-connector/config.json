@@ -1,0 +1,23 @@
+{
+  "serverUrl": "https://fusion-studio.onrender.com",
+  "token": "fusion-catraca-2026",
+  "pollIntervalMs": 2500,
+  "turnstile": {
+    "brand": "Henry",
+    "model": "Henry 7x",
+    "ip": "10.0.0.236",
+    "port": 3000
+  },
+  "driver": {
+    "mode": "dry-run",
+    "tcpOpenCommandHex": "",
+    "programPath": "",
+    "programArgs": []
+  },
+  "biometric": {
+    "enabled": true,
+    "mode": "manual-console",
+    "readerProgramPath": "",
+    "readerProgramArgs": []
+  }
+}
