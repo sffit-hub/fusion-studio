@@ -110,8 +110,8 @@ function ensureFinance(db) {
 function currentAdmin(req, db) {
   ensureFinance(db);
   const username = req.headers["x-admin-user"] || "admin";
-  const password = req.headers["x-password"];
-  return db.admins.find((admin) => normalize(admin.username) === normalize(username) && admin.password === password && !admin.blocked);
+  const password = cleanPassword(req.headers["x-password"]);
+  return db.admins.find((admin) => normalize(admin.username) === normalize(username) && cleanPassword(admin.password) === password && !admin.blocked);
 }
 
 function okAdmin(req, db) {
@@ -119,8 +119,14 @@ function okAdmin(req, db) {
 }
 
 function okStudentPassword(req, db, student) {
-  const password = student?.access?.accessPassword || db.passwords?.student;
-  return req.headers["x-password"] === password;
+  const informed = cleanPassword(req.headers["x-password"]);
+  const accepted = [
+    student?.access?.accessPassword,
+    student?.accessPassword,
+    student?.password,
+    db.passwords?.student
+  ].map(cleanPassword).filter(Boolean);
+  return accepted.includes(informed);
 }
 
 function okStudentFaceToken(req, db, student) {
@@ -134,15 +140,20 @@ function okStudentFaceToken(req, db, student) {
 function okProfessorPassword(req, db, professorId) {
   const professor = db.professors.find((item) => item.id === professorId);
   if (!professor || professor.blocked) return false;
-  return req.headers["x-password"] === (professor.password || db.passwords?.professor);
+  return cleanPassword(req.headers["x-password"]) === cleanPassword(professor.password || db.passwords?.professor);
 }
 
 function okAnyProfessorPassword(req, db) {
-  return db.professors.some((professor) => !professor.blocked && req.headers["x-password"] === (professor.password || db.passwords?.professor));
+  const informed = cleanPassword(req.headers["x-password"]);
+  return db.professors.some((professor) => !professor.blocked && informed === cleanPassword(professor.password || db.passwords?.professor));
 }
 
 function normalize(value = "") {
   return String(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+}
+
+function cleanPassword(value = "") {
+  return String(value ?? "").trim();
 }
 
 function onlyDigits(value = "") {
