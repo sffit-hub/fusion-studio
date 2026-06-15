@@ -183,6 +183,23 @@ function createTurnstileCommand(db, student, reason = "manual") {
   return command;
 }
 
+function offlineTurnstileStudents(db) {
+  return (db.students || [])
+    .filter((student) => canStudentAccess(student) && (!student.paymentStatus || student.paymentStatus === "Em dia"))
+    .map((student) => ({
+      id: student.id,
+      slug: student.slug,
+      name: student.name,
+      cpf: onlyDigits(student.cpf),
+      registration: onlyDigits(student.registration),
+      accessCardNumber: onlyDigits(student.access?.accessCardNumber),
+      paymentStatus: student.paymentStatus || "Em dia",
+      status: studentStatus(student),
+      blocked: Boolean(student.blocked),
+      updatedAt: db.updatedAt || new Date().toISOString()
+    }));
+}
+
 function slugify(value) {
   return normalize(value).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "cadastro";
 }
@@ -2113,6 +2130,15 @@ const server = http.createServer(async (req, res) => {
       }
       if (commands.length) await saveDb(db);
       return json(res, 200, { ok: true, turnstile: db.turnstile, commands });
+    }
+    if (req.method === "GET" && url.pathname === "/api/turnstile/offline-students") {
+      const token = url.searchParams.get("token") || req.headers["x-turnstile-token"];
+      if (!token || token !== db.turnstile?.connectorToken) return json(res, 401, { error: "Token da catraca invalido." });
+      return json(res, 200, {
+        ok: true,
+        generatedAt: new Date().toISOString(),
+        students: offlineTurnstileStudents(db)
+      });
     }
     if (req.method === "POST" && url.pathname === "/api/turnstile/biometric-open") {
       const token = url.searchParams.get("token") || req.headers["x-turnstile-token"];
