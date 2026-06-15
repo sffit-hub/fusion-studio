@@ -8,9 +8,42 @@
     "ip": "10.0.0.236",
     "port": 3000
   },
+  "offline": {
+    "enabled": true,
+    "folder": "portaria-local",
+    "syncIntervalMs": 60000
+  },
   "driver": {
-    "mode": "dry-run",
+    "mode": "online2-dll",
+    "henryUiWindowTitle": "Liberação de Catraca - [catra-site]",
+    "henryUiReleaseMode": "both",
+    "henryUiPrep": {
+      "enabled": true,
+      "henryProgramPath": "C:\\Program Files (x86)\\Henry\\Henry7x\\Henry7x.exe",
+      "equipmentClickX": 165,
+      "equipmentClickY": 105,
+      "liberarMenuOffsetX": 230,
+      "liberarMenuOffsetY": 532,
+      "contextMenuDownsToLiberar": 15,
+      "dialog": {
+        "timedRadioX": 0.26,
+        "timedRadioY": 0.48,
+        "secondsInputX": 0.82,
+        "secondsInputY": 0.48,
+        "bothSidesRadioX": 0.64,
+        "bothSidesRadioY": 0.7
+      }
+    },
     "tcpOpenCommandHex": "",
+    "online2Dll": {
+      "path": "C:\\PROSISTEMAS\\SCA\\Online2.dll",
+      "node32Path": "C:\\Node32\\node.exe",
+      "tipoComm": 2,
+      "idEquipamento": 1,
+      "ip": "10.0.0.236",
+      "porta": 3000,
+      "sentidoGiro": 1
+    },
     "programPath": "",
     "programArgs": []
   },
