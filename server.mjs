@@ -1465,7 +1465,13 @@ function adminPage() {
           birthDate.value = value;
           age.value = calculateAge(value);
         };
+        birthDate.setAttribute('maxlength', '10');
+        birthDate.setAttribute('placeholder', 'dd/mm/aaaa');
         birthDate.addEventListener('input', sync);
+        birthDate.addEventListener('keyup', sync);
+        birthDate.addEventListener('change', sync);
+        birthDate.addEventListener('blur', sync);
+        birthDate.addEventListener('paste', () => setTimeout(sync, 0));
         sync();
       }
       document.getElementById('closeDrawer').addEventListener('click', closeDrawer);
