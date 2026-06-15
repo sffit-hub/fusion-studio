@@ -67,6 +67,15 @@ function ensureFinance(db) {
   db.payments ||= [];
   db.attendance ||= [];
   db.faceSessions ||= [];
+  db.turnstile ||= {
+    enabled: true,
+    name: "Henry 7x",
+    ip: "10.0.0.236",
+    port: 3000,
+    connectorToken: "fusion-catraca-2026"
+  };
+  db.turnstileCommands ||= [];
+  db.turnstileEvents ||= [];
   db.products ||= [
     { id: "produto-agua", name: "Agua", price: 3, stock: 0, active: true },
     { id: "produto-isotonico", name: "Isotonico", price: 7, stock: 0, active: true }
@@ -154,6 +163,24 @@ function studentAccessMessage(student) {
   if (student.inactive || studentStatus(student) === "Inativo") return "Aluno inativo. Procure a administracao.";
   if (student.blocked) return "Aluno bloqueado. Procure a administracao.";
   return "";
+}
+
+function createTurnstileCommand(db, student, reason = "manual") {
+  db.turnstileCommands ||= [];
+  const command = {
+    id: `catraca-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+    type: "open",
+    reason,
+    holdSeconds: reason === "student-page" ? 10 : 3,
+    studentId: student.id,
+    studentName: student.name,
+    status: "pending",
+    attempts: 0,
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 60 * 1000).toISOString()
+  };
+  db.turnstileCommands.push(command);
+  return command;
 }
 
 function slugify(value) {
@@ -1029,6 +1056,14 @@ function studentPage(slug) {
       const s = await res.json();
       renderStudent(s);
     }
+    function studentAuthHeaders() {
+      const headers = { 'content-type': 'application/json' };
+      const faceToken = sessionStorage.getItem(faceSessionKey);
+      const savedPassword = sessionStorage.getItem(sessionKey) || pass.value;
+      if (faceToken) headers['x-face-token'] = faceToken;
+      else headers['x-password'] = savedPassword;
+      return headers;
+    }
     function renderStudent(s) {
       document.getElementById('login').remove();
       app.hidden = false;
@@ -1037,6 +1072,7 @@ function studentPage(slug) {
         '<section class="student-hero"><div class="student-photo-wrap">' + (s.photo ? '<img src="' + s.photo + '" alt="Foto do aluno">' : '<span>Sem foto</span>') + '</div><div><p>Bem-vindo</p><h1>' + s.name + '</h1><span>Professor: ' + s.professorName + '</span></div></section>' +
         '<section class="student-summary"><article class="student-card' + alert + '"><span>Vencimento</span><strong>' + s.paymentDue + '</strong><small>' + s.paymentStatus + '</small></article><article class="student-card"><span>Plano</span><strong>' + s.plan + '</strong><small>Matricula ativa</small></article><article class="student-card"><span>Frequencia</span><strong>' + s.frequency + '</strong><small>Ultima entrada: ' + s.lastCheckin + '</small></article></section>' +
         '<nav class="student-tabs"><a href="#treino">Treino</a><a href="#avaliacao">Avaliacao</a><a href="#dados">Dados</a></nav>' +
+        '<section class="student-section" id="catraca"><h2>Catraca</h2><div class="student-card"><span>Entrada liberada pelo aluno</span><strong>1 vez por dia</strong><small>A catraca fica livre por 10 segundos.</small><button class="button primary" id="studentOpenTurnstile">Liberar catraca agora</button><p id="studentTurnstileResult" class="empty"></p></div></section>' +
         '<section class="student-section" id="treino"><h2>Treino atual</h2>' + renderWorkout(s.routine) + '</section>' +
         '<section class="student-section" id="avaliacao"><h2>Avaliacao fisica e anamnese</h2>' + renderAssessment(s.assessmentData) + '</section>' +
         '<section class="student-section" id="dados"><h2>Dados do acesso</h2><div class="readonly-grid"><div><span>Matricula</span><strong>' + text(s.registration) + '</strong></div><div><span>CPF</span><strong>' + text(s.cpf) + '</strong></div><div><span>Celular</span><strong>' + text(s.mobile) + '</strong></div></div></section>';
@@ -1044,6 +1080,24 @@ function studentPage(slug) {
         sessionStorage.removeItem(sessionKey);
         sessionStorage.removeItem(faceSessionKey);
         location.href = '/alunos';
+      });
+      document.getElementById('studentOpenTurnstile').addEventListener('click', async () => {
+        const button = document.getElementById('studentOpenTurnstile');
+        const result = document.getElementById('studentTurnstileResult');
+        button.disabled = true;
+        result.textContent = 'Enviando liberacao para a catraca...';
+        const res = await fetch('/api/student/' + slug + '/turnstile/open', {
+          method: 'POST',
+          headers: studentAuthHeaders(),
+          body: JSON.stringify({})
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          result.textContent = data.message || 'Catraca liberada por 10 segundos.';
+        } else {
+          result.textContent = data.error || 'Nao foi possivel liberar a catraca.';
+          button.disabled = false;
+        }
       });
     }
     document.getElementById('enter').addEventListener('click', enter);
@@ -1376,6 +1430,10 @@ function adminPage() {
       const rows = (data.attendance || []).slice().reverse().slice(0, 80).map((entry) => '<div class="admin-row attendance-row"><div class="admin-student-line">' + (entry.photo ? '<img src="' + entry.photo + '" alt="">' : '<span class="photo-placeholder">Foto</span>') + '<div><strong>' + entry.studentName + '</strong><span>' + new Date(entry.createdAt).toLocaleString('pt-BR') + ' | ' + (entry.status || 'Registrado') + (entry.faceScore ? ' | Similaridade: ' + entry.faceScore + '%' : '') + '</span></div></div><div><strong>' + (entry.method || 'foto facial') + '</strong></div></div>').join('');
       return rows || '<p class="empty">Nenhuma presenca registrada.</p>';
     }
+    function renderTurnstileList() {
+      const rows = (data.turnstileCommands || []).slice().reverse().slice(0, 60).map((item) => '<div class="admin-row"><div><strong>' + (item.studentName || '-') + '</strong><span>' + (item.status || '-') + ' | ' + new Date(item.createdAt).toLocaleString('pt-BR') + (item.message ? ' | ' + item.message : '') + '</span></div><div><strong>' + (item.type || 'open') + '</strong></div></div>').join('');
+      return rows || '<p class="empty">Nenhum comando enviado para a catraca.</p>';
+    }
     function studentCadastroForm() {
       return '<form id="studentForm" class="editor-form cadastro-form">' +
         '<fieldset><legend>Dados cadastrais</legend><label>MatrÃ­cula<input name="registration" placeholder="00392"></label><label>Nome<input name="name" required></label><label>Foto do aluno<input name="photoFile" type="file" accept="image/*"></label><label>Endereco<input name="address"></label><label>Bairro<input name="district"></label><label>CEP<input name="zipCode"></label><label>Cidade<input name="city" value="MACEIO"></label><label>UF<input name="state" value="AL"></label><label>Telefone<input name="phone"></label><label>Celular<input name="mobile"></label><label>Sexo<select name="gender"><option>Masculino</option><option>Feminino</option><option>Outro</option></select></label><label>CPF<input name="cpf" placeholder="000.000.000-00" required></label><label>Identidade<input name="identity"></label><label>UF identidade<input name="identityState"></label><label>E-mail<input name="email" type="email"></label><label>Data nascimento<input name="birthDate" inputmode="numeric" placeholder="dd/mm/aaaa" maxlength="10"></label><label>Idade<input name="age" type="number" readonly></label><label>SituaÃ§Ã£o<input name="situation" value="Ativo"></label><label>DÃ©bito<input name="debit" placeholder="R$ 0,00"></label><label>ObservaÃ§Ãµes<textarea name="registrationNotes" rows="4"></textarea></label></fieldset>' +
@@ -1403,11 +1461,12 @@ function adminPage() {
       app.innerHTML = '<header class="admin-top"><a class="brand" href="/"><span class="brand-mark">FCF</span><span>Painel da academia</span></a><div class="admin-header-actions"><div class="admin-status"><strong>' + data.students.length + '</strong><span>alunos cadastrados</span></div><button class="button neutral" id="logoutAdmin">Sair</button></div></header>' +
         '<div id="toast" class="toast" hidden></div>' +
         '<section class="admin-hero"><div><p class="eyebrow dark">Area administrativa</p><h1>Gestao da academia</h1><p>Cadastros, acessos, planos, pagamentos e bloqueios em um painel separado da area do aluno.</p></div><button class="button primary" id="openNewStudent">Novo cadastro</button></section>' +
-        '<nav class="module-bar"><a href="#alunos">Alunos</a><a href="#caixa">Caixa</a><a href="#usuarios">Usuarios</a><a href="#presencas">Presencas</a><a href="#acessos">Acessos</a><a href="#relatorios">Relatorios</a></nav>' +
+        '<nav class="module-bar"><a href="#alunos">Alunos</a><a href="#caixa">Caixa</a><a href="#usuarios">Usuarios</a><a href="#presencas">Presencas</a><a href="#catraca">Catraca</a><a href="#acessos">Acessos</a><a href="#relatorios">Relatorios</a></nav>' +
         '<section class="admin-metrics">' + renderFinanceSummary() + '</section>' +
         '<section class="workspace admin-workspace"><section class="panel admin-module" id="alunos"><h2>Alunos</h2><input id="q" class="field compact-search" placeholder="Buscar aluno"><div class="student-status-columns"><div><h3>Aguardando ativacao</h3><div id="pendingRows" class="admin-list compact-list name-only-list"></div></div><div><h3>Ativos</h3><div id="activeRows" class="admin-list compact-list name-only-list"></div></div><div><h3>Inativos</h3><div id="inactiveRows" class="admin-list compact-list name-only-list"></div></div><div><h3>Excluidos</h3><div id="deletedRows" class="admin-list compact-list name-only-list"></div></div></div></section><section class="panel admin-module" id="usuarios"><h2>Usuarios e planos</h2><button class="button primary" id="openNewProfessor">Cadastrar professor</button><hr><form id="adminForm" class="editor-form"><label>Nome do admin<input name="name" required></label><label>Usuario<input name="username" required></label><label>Senha<input name="password" required></label><button class="button primary" type="submit">Criar novo admin</button></form><hr><form id="changePasswordForm" class="editor-form"><label>Nova senha deste admin<input name="password" required></label><button class="button primary" type="submit">Alterar minha senha</button></form><hr><form id="planForm" class="editor-form"><label>Nome do plano<input name="name" required></label><label>Tipo<select name="type"><option value="mensal">Mensal</option><option value="prepago">Pre-pago</option><option value="trimestral">Trimestral</option><option value="semestral">Semestral</option><option value="diarista">Diarista</option><option value="anual">Anual</option></select></label><label>Valor<input name="price" type="number" step="0.01" required></label><button class="button primary" type="submit">Cadastrar plano</button></form><div id="planRows" class="admin-list"></div></section></section>' +
         '<section class="panel admin-module" id="caixa"><h2>Caixa</h2><div class="cash-grid"><form id="paymentForm" class="editor-form"><h3>Mensalidade ou matricula</h3><label>Origem<select name="source"><option value="mensalidade">Mensalidade</option><option value="matricula">Matricula</option></select></label><label>Aluno<select name="studentId">' + data.students.map((s) => '<option value="' + s.id + '">' + s.name + '</option>').join('') + '</select></label><label>Plano<select name="planId">' + planOptions(data.plans[0]?.id) + '</select></label><label>Valor pago<input name="amount" type="number" step="0.01" required></label><label>Forma de pagamento<select name="method"><option value="dinheiro">Dinheiro</option><option value="pix">Pix</option><option value="debito">Cartao de debito</option><option value="credito">Cartao de credito</option></select></label><label>Mes pago<input name="paidMonth" type="month"></label><label>Proximo vencimento automatico<input name="nextDue" type="date" readonly></label><button class="button primary" type="submit">Lancar pagamento</button></form><form id="productSaleForm" class="editor-form"><h3>Venda de produto</h3><label>Produto<select name="productId">' + productOptions(data.products?.[0]?.id) + '</select></label><label>Quantidade<input name="quantity" type="number" min="1" value="1"></label><label>Valor total<input name="amount" type="number" step="0.01" required></label><label>Forma de pagamento<select name="method"><option value="dinheiro">Dinheiro</option><option value="pix">Pix</option><option value="debito">Cartao de debito</option><option value="credito">Cartao de credito</option></select></label><button class="button primary" type="submit">Lancar venda</button></form><form id="productForm" class="editor-form"><h3>Cadastrar produto</h3><label>Nome do produto<input name="name" required></label><label>Valor<input name="price" type="number" step="0.01" required></label><label>Estoque<input name="stock" type="number" value="0"></label><button class="button primary" type="submit">Cadastrar produto</button></form></div><div id="productRows" class="admin-list"></div><h3>Lista do caixa</h3><div id="cashRows" class="admin-list">' + renderCashList() + '</div></section>' +
         '<section class="panel admin-module" id="presencas"><h2>Presencas por foto facial</h2><p class="empty">Abra /presenca no celular do aluno conectado ao Wi-Fi para registrar entrada.</p><div id="attendanceRows" class="admin-list">' + renderAttendanceList() + '</div></section>' +
+        '<section class="panel admin-module" id="catraca"><h2>Catraca Henry 7x</h2><div class="readonly-grid"><div><span>Equipamento</span><strong>' + (data.turnstile?.name || 'Henry 7x') + '</strong></div><div><span>IP / Porta</span><strong>' + (data.turnstile?.ip || '10.0.0.236') + ':' + (data.turnstile?.port || 3000) + '</strong></div><div><span>Token do conector</span><strong>' + (data.turnstile?.connectorToken || '-') + '</strong></div></div><p class="empty">O conector local deve ficar aberto no computador da academia para receber estes comandos e liberar a catraca.</p><div id="turnstileRows" class="admin-list">' + renderTurnstileList() + '</div></section>' +
         '<section class="panel admin-module" id="acessos"><h2>Professores e admins</h2><div id="professorRows" class="admin-list"></div><div id="adminRows" class="admin-list"></div></section>' +
         '<section class="panel admin-module report-preview" id="relatorios"><h2>Relatorios e proximos modulos</h2><div class="module-grid"><article>Controle de turmas</article><article>Caixa e vendas</article><article>Estoque</article><article>Check-in</article><article>Contratos</article><article>WhatsApp</article></div></section>' +
         '<aside id="studentDrawer" class="side-drawer" aria-hidden="true"><div class="drawer-head"><h2 id="drawerTitle">Editar cadastro</h2><button class="button neutral" id="closeDrawer">Fechar</button></div><div id="editStudentPanel"></div></aside><div id="drawerBackdrop" class="drawer-backdrop" hidden></div>' +
@@ -1709,7 +1768,7 @@ function adminPage() {
           '<fieldset><legend>HorÃ¡rio</legend><label class="checkline"><input name="restrictedSchedule" type="checkbox" value="sim"' + checked(rules.restrictedSchedule) + '> Restringir acesso conforme horÃ¡rio</label><label>Dia da semana<select name="scheduleDay"><option></option><option' + selectedOption(rules.scheduleDay, 'Segunda') + '>Segunda</option><option' + selectedOption(rules.scheduleDay, 'TerÃ§a') + '>TerÃ§a</option><option' + selectedOption(rules.scheduleDay, 'Quarta') + '>Quarta</option><option' + selectedOption(rules.scheduleDay, 'Quinta') + '>Quinta</option><option' + selectedOption(rules.scheduleDay, 'Sexta') + '>Sexta</option><option' + selectedOption(rules.scheduleDay, 'SÃ¡bado') + '>SÃ¡bado</option><option' + selectedOption(rules.scheduleDay, 'Domingo') + '>Domingo</option></select></label><label>Entrada<input name="scheduleEntry" type="time" value="' + safe(rules.scheduleEntry) + '"></label><label>SaÃ­da<input name="scheduleExit" type="time" value="' + safe(rules.scheduleExit) + '"></label><label>Local<input name="schedulePlace" value="' + safe(rules.schedulePlace) + '"></label><label>Turma<input name="scheduleClass" value="' + safe(rules.scheduleClass) + '"></label><label class="checkline"><input name="limitDailyAccess" type="checkbox" value="sim"' + checked(rules.limitDailyAccess) + '> Restringir acessos por dia</label><label>Acessos por dia<input name="accessesPerDay" type="number" value="' + safe(rules.accessesPerDay) + '"></label><label class="checkline"><input name="limitWeeklyAccess" type="checkbox" value="sim"' + checked(rules.limitWeeklyAccess) + '> Restringir acessos por semana</label><label>Acessos por semana<input name="accessesPerWeek" type="number" value="' + safe(rules.accessesPerWeek) + '"></label><label class="checkline"><input name="reentryControl" type="checkbox" value="sim"' + checked(rules.reentryControl) + '> Controle de reentrada</label><label>Minutos reentrada<input name="reentryMinutes" type="number" value="' + safe(rules.reentryMinutes) + '"></label><label>Segundos reentrada<input name="reentrySeconds" type="number" value="' + safe(rules.reentrySeconds) + '"></label></fieldset>' +
           '<fieldset><legend>Acesso</legend><label>CartÃ£o de acesso?<select name="hasAccessCard"><option' + selectedOption(access.hasAccessCard, 'NÃ£o') + '>NÃ£o</option><option' + selectedOption(access.hasAccessCard, 'Sim') + '>Sim</option></select></label><label>NÂº do cartÃ£o<input name="accessCardNumber" value="' + safe(access.accessCardNumber) + '"></label><label>Senha individual do aluno<input name="accessPassword" value="' + safe(access.accessPassword) + '"></label><label>Status digital<input name="fingerprintStatus" value="' + safe(access.fingerprintStatus) + '"></label></fieldset>' +
           '<fieldset><legend>Plano e professor</legend><label>Professor<select name="professorId">' + professorOptions(s.professorId) + '</select></label><label>Plano<select name="planId">' + planOptions(s.planId) + '</select></label><label>Vencimento<input name="paymentDue" type="date" value="' + safe(s.paymentDue) + '"></label><label>Status pagamento<select name="paymentStatus"><option' + selectedOption(s.paymentStatus, 'Aguardando pagamento') + '>Aguardando pagamento</option><option' + selectedOption(s.paymentStatus, 'Em dia') + '>Em dia</option><option' + selectedOption(s.paymentStatus, 'Atencao') + '>Atencao</option><option' + selectedOption(s.paymentStatus, 'Vencido') + '>Vencido</option></select></label><label>Status do aluno<select name="status"><option' + selectedOption(s.status, 'Aguardando ativacao') + '>Aguardando ativacao</option><option' + selectedOption(s.status || 'Ativo', 'Ativo') + '>Ativo</option><option' + selectedOption(s.status, 'Inativo') + '>Inativo</option><option' + selectedOption(s.status, 'Excluido') + '>Excluido</option></select></label><label class="checkline"><input name="blocked" type="checkbox" value="sim"' + checked(s.blocked) + '> Bloquear acesso</label></fieldset>' +
-          '<button class="button primary" type="submit">Salvar alteraÃ§Ãµes do aluno</button>' + (statusOf(s) === 'Aguardando ativacao' ? '<button class="button neutral" type="button" data-pay-activate-student="' + s.id + '">Ativar com pagamento</button>' : '') + '<button class="button danger" type="button" data-popup-delete-student="' + s.id + '">Excluir aluno</button></form>';
+          '<button class="button primary" type="submit">Salvar alteraÃ§Ãµes do aluno</button><button class="button neutral" type="button" data-open-turnstile-student="' + s.id + '">Liberar catraca</button>' + (statusOf(s) === 'Aguardando ativacao' ? '<button class="button neutral" type="button" data-pay-activate-student="' + s.id + '">Ativar com pagamento</button>' : '') + '<button class="button danger" type="button" data-popup-delete-student="' + s.id + '">Excluir aluno</button></form>';
         bindBirthDateAge(document.getElementById('editStudentForm'));
         document.getElementById('editStudentForm').addEventListener('submit', async (e) => {
           e.preventDefault();
@@ -1729,6 +1788,17 @@ function adminPage() {
           if (!confirm('Mover este aluno para a lista de excluidos?')) return;
           const res = await api('/api/admin/student/' + s.id, { method: 'PUT', body: JSON.stringify({ status: 'Excluido', deleted: true, blocked: true }) });
           if (res.ok) { await refresh(); draw(); drawAccess(); closeDrawer(); showToast('Aluno movido para excluidos.'); }
+        });
+        editPanel.querySelector('[data-open-turnstile-student]')?.addEventListener('click', async () => {
+          const res = await api('/api/admin/turnstile/open', { method: 'POST', body: JSON.stringify({ studentId: s.id, reason: 'manual-admin' }) });
+          const answer = await res.json().catch(() => ({}));
+          if (res.ok) {
+            await refresh();
+            document.getElementById('turnstileRows').innerHTML = renderTurnstileList();
+            showToast('Comando enviado para o conector da catraca.');
+          } else {
+            alert(answer.error || 'Nao foi possivel liberar a catraca.');
+          }
         });
         editPanel.querySelector('[data-pay-activate-student]')?.addEventListener('click', () => {
           closeDrawer();
@@ -1977,6 +2047,20 @@ const server = http.createServer(async (req, res) => {
       if (!okStudentPassword(req, db, student) && !okStudentFaceToken(req, db, student)) return json(res, 401, { error: "Senha incorreta" });
       return json(res, 200, { ...student, professorName: professorName(db, student.professorId) });
     }
+    if (req.method === "POST" && url.pathname.match(/^\/api\/student\/[^/]+\/turnstile\/open$/)) {
+      const slug = decodeURIComponent(url.pathname.split("/")[3]);
+      const student = db.students.find((s) => s.slug === slug || s.id === slug);
+      if (!student) return json(res, 404, { error: "Aluno nao encontrado" });
+      if (!canStudentAccess(student)) return json(res, 403, { error: studentAccessMessage(student) });
+      if (student.paymentStatus && student.paymentStatus !== "Em dia") return json(res, 403, { error: "Aluno sem pagamento em dia." });
+      if (!okStudentPassword(req, db, student) && !okStudentFaceToken(req, db, student)) return json(res, 401, { error: "Senha incorreta" });
+      const today = new Date().toISOString().slice(0, 10);
+      const alreadyToday = (db.turnstileCommands || []).some((item) => item.studentId === student.id && item.reason === "student-page" && String(item.createdAt || "").slice(0, 10) === today && item.status !== "failed");
+      if (alreadyToday) return json(res, 429, { error: "A catraca ja foi liberada hoje pela sua pagina. Procure a recepcao se precisar liberar novamente." });
+      const command = createTurnstileCommand(db, student, "student-page");
+      await saveDb(db);
+      return json(res, 201, { ok: true, command, message: "Liberacao enviada. A catraca ficara livre por 10 segundos." });
+    }
     if (req.method === "GET" && url.pathname.match(/^\/api\/professor\/[^/]+\/students$/)) {
       const professorId = url.pathname.split("/")[3];
       if (!okProfessorPassword(req, db, professorId)) return json(res, 401, { error: "Senha incorreta ou professor bloqueado" });
@@ -2002,7 +2086,74 @@ const server = http.createServer(async (req, res) => {
     }
     if (req.method === "GET" && url.pathname === "/api/admin") {
       if (!okAdmin(req, db)) return json(res, 401, { error: "Senha incorreta" });
-      return json(res, 200, { professors: db.professors, students: db.students, admins: db.admins, plans: db.plans, products: db.products, payments: db.payments, attendance: db.attendance || [], paymentTotals: paymentTotals(db) });
+      return json(res, 200, { professors: db.professors, students: db.students, admins: db.admins, plans: db.plans, products: db.products, payments: db.payments, attendance: db.attendance || [], turnstile: db.turnstile, turnstileCommands: db.turnstileCommands || [], turnstileEvents: db.turnstileEvents || [], paymentTotals: paymentTotals(db) });
+    }
+    if (req.method === "POST" && url.pathname === "/api/admin/turnstile/open") {
+      if (!okAdmin(req, db)) return json(res, 401, { error: "Senha incorreta" });
+      const body = await readBody(req);
+      const student = db.students.find((s) => s.id === body.studentId || s.slug === body.studentId);
+      if (!student) return json(res, 404, { error: "Aluno nao encontrado." });
+      if (!canStudentAccess(student)) return json(res, 403, { error: studentAccessMessage(student) || "Aluno sem acesso liberado." });
+      if (student.paymentStatus && student.paymentStatus !== "Em dia") return json(res, 403, { error: "Aluno sem pagamento em dia." });
+      const command = createTurnstileCommand(db, student, body.reason || "manual-admin");
+      await saveDb(db);
+      return json(res, 201, { ok: true, command });
+    }
+    if (req.method === "GET" && url.pathname === "/api/turnstile/pending") {
+      const token = url.searchParams.get("token") || req.headers["x-turnstile-token"];
+      if (!token || token !== db.turnstile?.connectorToken) return json(res, 401, { error: "Token da catraca invalido." });
+      const now = Date.now();
+      const commands = (db.turnstileCommands || [])
+        .filter((item) => item.status === "pending" && new Date(item.expiresAt).getTime() > now)
+        .slice(0, 5);
+      for (const command of commands) {
+        command.status = "sent";
+        command.sentAt = new Date().toISOString();
+        command.attempts = Number(command.attempts || 0) + 1;
+      }
+      if (commands.length) await saveDb(db);
+      return json(res, 200, { ok: true, turnstile: db.turnstile, commands });
+    }
+    if (req.method === "POST" && url.pathname === "/api/turnstile/biometric-open") {
+      const token = url.searchParams.get("token") || req.headers["x-turnstile-token"];
+      if (!token || token !== db.turnstile?.connectorToken) return json(res, 401, { error: "Token da catraca invalido." });
+      const body = await readBody(req);
+      const cpf = onlyDigits(body.cpf || body.identifier || "");
+      const identifier = normalize(body.identifier || body.name || "");
+      const student = db.students.find((s) =>
+        (cpf && onlyDigits(s.cpf) === cpf) ||
+        (cpf && onlyDigits(s.registration) === cpf) ||
+        (cpf && onlyDigits(s.access?.accessCardNumber) === cpf) ||
+        (identifier && normalize(s.name) === identifier)
+      );
+      if (!student) return json(res, 404, { error: "Aluno nao encontrado para biometria." });
+      if (!canStudentAccess(student)) return json(res, 403, { error: studentAccessMessage(student) });
+      if (student.paymentStatus && student.paymentStatus !== "Em dia") return json(res, 403, { error: "Aluno sem pagamento em dia." });
+      const command = createTurnstileCommand(db, student, "biometric-local");
+      await saveDb(db);
+      return json(res, 201, { ok: true, command, studentName: student.name });
+    }
+    if (req.method === "POST" && url.pathname === "/api/turnstile/result") {
+      const token = url.searchParams.get("token") || req.headers["x-turnstile-token"];
+      if (!token || token !== db.turnstile?.connectorToken) return json(res, 401, { error: "Token da catraca invalido." });
+      const body = await readBody(req);
+      const command = (db.turnstileCommands || []).find((item) => item.id === body.id);
+      if (!command) return json(res, 404, { error: "Comando nao encontrado." });
+      command.status = body.ok ? "opened" : "failed";
+      command.message = body.message || "";
+      command.finishedAt = new Date().toISOString();
+      db.turnstileEvents ||= [];
+      db.turnstileEvents.push({
+        id: `evento-catraca-${Date.now()}`,
+        commandId: command.id,
+        studentId: command.studentId,
+        studentName: command.studentName,
+        ok: Boolean(body.ok),
+        message: body.message || "",
+        createdAt: new Date().toISOString()
+      });
+      await saveDb(db);
+      return json(res, 200, { ok: true });
     }
     if (req.method === "POST" && url.pathname === "/api/admin/professor") {
       if (!okAdmin(req, db)) return json(res, 401, { error: "Senha incorreta" });
