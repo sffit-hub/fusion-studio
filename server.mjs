@@ -110,22 +110,8 @@ function ensureFinance(db) {
 function currentAdmin(req, db) {
   ensureFinance(db);
   const username = req.headers["x-admin-user"] || "admin";
-  const password = cleanPassword(req.headers["x-password"]);
-  const admin = db.admins.find((item) => normalize(item.username) === normalize(username) && cleanPassword(item.password) === password && !item.blocked);
-  if (admin) return admin;
-  if (normalize(username) === "admin" && password === "admin2026") {
-    let primary = db.admins.find((item) => item.primary) || db.admins[0];
-    if (!primary) {
-      primary = { id: "admin-principal", name: "Administrador principal", username: "admin", password: "admin2026", blocked: false, primary: true };
-      db.admins.push(primary);
-    }
-    primary.username = primary.username || "admin";
-    primary.password = primary.password || "admin2026";
-    primary.blocked = false;
-    primary.primary = true;
-    return primary;
-  }
-  return null;
+  const password = req.headers["x-password"];
+  return db.admins.find((admin) => normalize(admin.username) === normalize(username) && admin.password === password && !admin.blocked);
 }
 
 function okAdmin(req, db) {
@@ -133,14 +119,8 @@ function okAdmin(req, db) {
 }
 
 function okStudentPassword(req, db, student) {
-  const informed = cleanPassword(req.headers["x-password"]);
-  const accepted = [
-    student?.access?.accessPassword,
-    student?.accessPassword,
-    student?.password,
-    db.passwords?.student
-  ].map(cleanPassword).filter(Boolean);
-  return accepted.includes(informed);
+  const password = student?.access?.accessPassword || db.passwords?.student;
+  return req.headers["x-password"] === password;
 }
 
 function okStudentFaceToken(req, db, student) {
@@ -154,20 +134,15 @@ function okStudentFaceToken(req, db, student) {
 function okProfessorPassword(req, db, professorId) {
   const professor = db.professors.find((item) => item.id === professorId);
   if (!professor || professor.blocked) return false;
-  return cleanPassword(req.headers["x-password"]) === cleanPassword(professor.password || db.passwords?.professor);
+  return req.headers["x-password"] === (professor.password || db.passwords?.professor);
 }
 
 function okAnyProfessorPassword(req, db) {
-  const informed = cleanPassword(req.headers["x-password"]);
-  return db.professors.some((professor) => !professor.blocked && informed === cleanPassword(professor.password || db.passwords?.professor));
+  return db.professors.some((professor) => !professor.blocked && req.headers["x-password"] === (professor.password || db.passwords?.professor));
 }
 
 function normalize(value = "") {
   return String(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
-}
-
-function cleanPassword(value = "") {
-  return String(value ?? "").trim();
 }
 
 function onlyDigits(value = "") {
@@ -522,18 +497,6 @@ function shell(title, body) {
 </head>
 <body>${body}
 <script>
-  async function fusionFetchJson(path, options = {}, timeoutMs = 12000) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    try {
-      const response = await fetch(path, { ...options, signal: controller.signal });
-      let data = {};
-      try { data = await response.json(); } catch (_) {}
-      return { response, data };
-    } finally {
-      clearTimeout(timer);
-    }
-  }
   let lastTouchEnd = 0;
   document.addEventListener('touchend', function(event) {
     const now = Date.now();
@@ -1096,27 +1059,19 @@ function studentPage(slug) {
       return '<div class="training-groups">' + groups.map((group) => '<section class="training-group"><div class="training-heading"><h3>' + text(group.name) + '</h3><p>' + text(group.description) + '</p></div><div class="training-carousel">' + (group.exercises || []).map((item) => '<article class="training-slide"><img src="' + item.image + '" alt=""><h4>' + item.name + '</h4><p><strong>' + text(item.sets) + '</strong> series | <strong>' + text(item.reps) + '</strong> repetiÃ§Ãµes</p><p>Peso: <strong>' + text(item.weight) + '</strong> | Descanso: <strong>' + text(item.rest) + '</strong></p><p>' + text(item.notes) + '</p></article>').join('') + '</div></section>').join('') + '</div>';
     }
     async function enter() {
-      try {
-        error.textContent = 'Verificando...';
-        const { response: res, data } = await fusionFetchJson('/api/student/' + slug, { headers: { 'x-password': pass.value } });
-        if (!res.ok) { sessionStorage.removeItem(sessionKey); error.textContent = data.error || 'Senha incorreta ou acesso bloqueado.'; return; }
-        sessionStorage.setItem(sessionKey, pass.value);
-        renderStudent(data);
-      } catch (err) {
-        sessionStorage.removeItem(sessionKey);
-        error.textContent = 'Servidor demorou para responder. Atualize a pagina e tente novamente.';
-      }
+      error.textContent = 'Verificando...';
+      const res = await fetch('/api/student/' + slug, { headers: { 'x-password': pass.value } });
+      if (!res.ok) { sessionStorage.removeItem(sessionKey); error.textContent = 'Senha incorreta.'; return; }
+      sessionStorage.setItem(sessionKey, pass.value);
+      const s = await res.json();
+      renderStudent(s);
     }
     async function enterWithFaceToken(token) {
-      try {
-        error.textContent = 'Verificando reconhecimento facial...';
-        const { response: res, data } = await fusionFetchJson('/api/student/' + slug, { headers: { 'x-face-token': token } });
-        if (!res.ok) { sessionStorage.removeItem(faceSessionKey); error.textContent = data.error || 'Reconhecimento facial expirado. Acesse novamente pela tela do aluno.'; return; }
-        renderStudent(data);
-      } catch (err) {
-        sessionStorage.removeItem(faceSessionKey);
-        error.textContent = 'Servidor demorou para responder. Atualize a pagina e tente novamente.';
-      }
+      error.textContent = 'Verificando reconhecimento facial...';
+      const res = await fetch('/api/student/' + slug, { headers: { 'x-face-token': token } });
+      if (!res.ok) { sessionStorage.removeItem(faceSessionKey); error.textContent = 'Reconhecimento facial expirado. Acesse novamente pela tela do aluno.'; return; }
+      const s = await res.json();
+      renderStudent(s);
     }
     function studentAuthHeaders() {
       const headers = { 'content-type': 'application/json' };
@@ -1127,20 +1082,6 @@ function studentPage(slug) {
       return headers;
     }
     function renderStudent(s) {
-      s = s?.student || s?.aluno || s?.data || s || {};
-      const firstValue = (...values) => {
-        const found = values.find((value) => value !== undefined && value !== null && String(value).trim() !== '');
-        return found === undefined ? 'Nao informado' : found;
-      };
-      s.name = firstValue(s.name, s.studentName, 'Aluno');
-      s.professorName = firstValue(s.professorName, s.professor, 'Nao informado');
-      s.paymentStatus = firstValue(s.paymentStatus, s.statusPagamento, 'Em dia');
-      s.paymentDue = firstValue(s.paymentDue, s.dueDate, s.nextDue, s.blockDate, 'Nao informado');
-      s.plan = firstValue(s.plan, s.planName, s.planId, 'Nao informado');
-      s.frequency = firstValue(s.frequency, s.attendanceCount, '0');
-      s.lastCheckin = firstValue(s.lastCheckin, s.lastAttendance, 'Sem registro');
-      s.routine ||= {};
-      s.assessmentData ||= {};
       document.getElementById('login').remove();
       app.hidden = false;
       const alert = s.paymentStatus !== 'Em dia' ? ' alert' : '';
@@ -1477,19 +1418,12 @@ function adminPage() {
     }
     async function refresh() { data = await api('/api/admin').then((r) => r.json()); }
     async function enter() {
-      try {
-        error.textContent = 'Verificando...';
-        const { response: res, data: payload } = await fusionFetchJson('/api/admin', {
-          headers: { 'x-admin-user': username.value, 'x-password': pass.value, 'content-type': 'application/json' }
-        });
-        if (!res.ok) { error.textContent = payload.error || 'Senha incorreta.'; return; }
-        data = payload;
-        document.getElementById('login').remove();
-        app.hidden = false;
-        render();
-      } catch (err) {
-        error.textContent = 'Servidor demorou para responder. Atualize a pagina e tente novamente.';
-      }
+      const res = await api('/api/admin');
+      if (!res.ok) { error.textContent = 'Senha incorreta.'; return; }
+      data = await res.json();
+      document.getElementById('login').remove();
+      app.hidden = false;
+      render();
     }
     function professorOptions(selected) {
       return data.professors.map((p) => '<option value="' + p.id + '"' + (p.id === selected ? ' selected' : '') + '>' + p.name + '</option>').join('');
@@ -1942,12 +1876,6 @@ function adminPage() {
     }
     document.getElementById('enter').addEventListener('click', enter);
     pass.addEventListener('keydown', (e) => { if (e.key === 'Enter') enter(); });
-    const recovery = new URLSearchParams(location.search).get('recuperar');
-    if (recovery === 'admin2026') {
-      username.value = 'admin';
-      pass.value = 'admin2026';
-      enter();
-    }
   </script>`);
 }
 

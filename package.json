@@ -8,8 +8,5 @@
   },
   "engines": {
     "node": ">=20"
-  },
-  "dependencies": {
-    "koffi": "^3.0.2"
   }
 }
