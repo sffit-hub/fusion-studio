@@ -1127,6 +1127,20 @@ function studentPage(slug) {
       return headers;
     }
     function renderStudent(s) {
+      s = s?.student || s?.aluno || s?.data || s || {};
+      const firstValue = (...values) => {
+        const found = values.find((value) => value !== undefined && value !== null && String(value).trim() !== '');
+        return found === undefined ? 'Nao informado' : found;
+      };
+      s.name = firstValue(s.name, s.studentName, 'Aluno');
+      s.professorName = firstValue(s.professorName, s.professor, 'Nao informado');
+      s.paymentStatus = firstValue(s.paymentStatus, s.statusPagamento, 'Em dia');
+      s.paymentDue = firstValue(s.paymentDue, s.dueDate, s.nextDue, s.blockDate, 'Nao informado');
+      s.plan = firstValue(s.plan, s.planName, s.planId, 'Nao informado');
+      s.frequency = firstValue(s.frequency, s.attendanceCount, '0');
+      s.lastCheckin = firstValue(s.lastCheckin, s.lastAttendance, 'Sem registro');
+      s.routine ||= {};
+      s.assessmentData ||= {};
       document.getElementById('login').remove();
       app.hidden = false;
       const alert = s.paymentStatus !== 'Em dia' ? ' alert' : '';
