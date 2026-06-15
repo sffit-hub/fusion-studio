@@ -341,6 +341,35 @@ function hasActivationPayment(db, studentId) {
   return (db.payments || []).some((payment) => payment.studentId === studentId && ["matricula", "mensalidade"].includes(payment.source || ""));
 }
 
+function registerStudentPayment(db, student, plan, body = {}) {
+  db.payments ||= [];
+  if (!student || hasActivationPayment(db, student.id)) return null;
+  const nextDue = body.nextDue || body.paymentDue || addMonths("", monthsForPlan(plan));
+  const payment = {
+    id: `pagamento-${Date.now()}`,
+    source: body.source || "matricula",
+    studentId: student.id,
+    studentName: student.name,
+    planId: plan?.id || student.planId || "",
+    planName: plan?.name || student.plan || "",
+    amount: Number(body.amount || plan?.price || 0),
+    method: body.method || "pix",
+    paidMonth: body.paidMonth || new Date().toISOString().slice(0, 7),
+    nextDue,
+    paidAt: new Date().toISOString()
+  };
+  db.payments.push(payment);
+  if (plan) {
+    student.planId = plan.id;
+    student.plan = plan.name;
+  }
+  if (nextDue) student.paymentDue = nextDue;
+  student.paymentStatus = "Em dia";
+  student.blocked = false;
+  student.status = "Ativo";
+  return payment;
+}
+
 function compareFaceVectors(a = [], b = []) {
   if (!Array.isArray(a) || !Array.isArray(b) || a.length < 100 || a.length !== b.length) return 0;
   let dot = 0;
@@ -1515,8 +1544,11 @@ function adminPage() {
             await refresh();
             draw();
             closeDrawer();
-            openPaymentPopup(created.id, 'matricula');
-            showToast('Cadastro salvo. Confirme o pagamento para ativar.');
+            if (created.paymentAutoRegistered) showToast('Cadastro salvo e pagamento registrado no Caixa.');
+            else {
+              openPaymentPopup(created.id, 'matricula');
+              showToast('Cadastro salvo. Confirme o pagamento para ativar.');
+            }
           }
         });
       });
@@ -1986,8 +2018,11 @@ const server = http.createServer(async (req, res) => {
       if (faceDuplicate) return json(res, 409, { error: "Ja existe um cadastro com caracteristicas faciais muito parecidas. Confira antes de cadastrar novamente." });
       const student = buildStudent(db, body);
       db.students.push(student);
+      const plan = db.plans.find((item) => item.id === student.planId);
+      const shouldRegisterPayment = (student.paymentStatus || "Em dia") === "Em dia" || student.status === "Ativo";
+      const payment = shouldRegisterPayment ? registerStudentPayment(db, student, plan, { ...body, source: "matricula" }) : null;
       await saveDb(db);
-      return json(res, 201, student);
+      return json(res, 201, { ...student, paymentAutoRegistered: Boolean(payment), payment });
     }
     if (req.method === "PUT" && url.pathname.startsWith("/api/admin/student/")) {
       if (!okAdmin(req, db)) return json(res, 401, { error: "Senha incorreta" });
