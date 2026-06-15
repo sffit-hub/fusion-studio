@@ -53,3 +53,14 @@ https://studio-fusion-online.onrender.com/professor
 https://studio-fusion-online.onrender.com/alunos
 https://studio-fusion-online.onrender.com/matricula
 https://studio-fusion-online.onrender.com/presenca
+
+AJUSTES DA VERSAO ONLINE
+- Textos da tela inicial e da presenca foram ajustados para uso online.
+- O menu publico foi removido do cabecalho; aluno e professor ficam com telas isoladas.
+- O menu completo permanece dentro do painel do administrador.
+- O reconhecimento facial automatico agora compara no servidor e nao baixa lista publica de fotos dos alunos.
+- A matricula online rejeita assinatura facial vazia ou sem qualidade.
+- A presenca facial tambem valida a selfie pelo servidor.
+
+OBSERVACAO IMPORTANTE
+Alunos antigos que ainda nao possuem assinatura facial valida podem precisar ter a foto atualizada no administrador para usar reconhecimento facial online.

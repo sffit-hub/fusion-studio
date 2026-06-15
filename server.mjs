@@ -348,8 +348,17 @@ function compareFaceVectors(a = [], b = []) {
   return Math.max(0, Math.min(100, Math.round(((dot / a.length) + 1) * 50)));
 }
 
+function isUsableFaceVector(faceVector = []) {
+  if (!Array.isArray(faceVector) || faceVector.length < 100) return false;
+  const values = faceVector.map((value) => Number(value || 0)).filter(Number.isFinite);
+  if (values.length !== faceVector.length) return false;
+  const energy = values.reduce((sum, value) => sum + Math.abs(value), 0) / values.length;
+  const spread = Math.max(...values) - Math.min(...values);
+  return energy > 0.05 && spread > 0.2;
+}
+
 function findFaceDuplicate(db, faceVector, ignoreStudentId = "") {
-  if (!Array.isArray(faceVector) || faceVector.length < 100) return null;
+  if (!isUsableFaceVector(faceVector)) return null;
   let best = null;
   for (const student of db.students || []) {
     if (ignoreStudentId && student.id === ignoreStudentId) continue;
@@ -387,13 +396,6 @@ function topbar() {
   return `<header class="topbar">
     <nav class="nav">
       <a class="brand" href="/"><span class="brand-mark">FCF</span><span>Fusion Combat Fit</span></a>
-      <div class="nav-links">
-        <a href="/matricula">Matricula</a>
-        <a href="/alunos">Aluno</a>
-        <a href="/presenca">Presenca</a>
-        <a href="/professor">Professor</a>
-        <a href="/admin">Admin</a>
-      </div>
     </nav>
   </header>`;
 }
@@ -403,9 +405,9 @@ function homePage() {
   <main>
     <section class="hero">
       <div class="hero-inner">
-        <div class="eyebrow">Rede local</div>
+        <div class="eyebrow">Sistema online</div>
         <h1>Academia Fusion Combat Fit</h1>
-        <p>Sistema local para alunos, professores e administrador acessarem pelo mesmo Wi-Fi, sem internet.</p>
+        <p>Portal online para matricula, alunos, professores, presenca e administracao da academia.</p>
         <div class="actions">
           <a class="button primary" href="/alunos">Acesso do aluno</a>
           <a class="button secondary" href="/matricula">Matricula online</a>
@@ -439,7 +441,7 @@ function homePage() {
       </div>
     </section>
   </main>
-  <footer>Fusion Combat Fit - servidor local</footer>
+  <footer>Fusion Combat Fit - servidor online</footer>
   <script>
     const q = document.getElementById('q');
     const results = document.getElementById('results');
@@ -751,14 +753,6 @@ function studentAccessPage() {
       const deviation = Math.sqrt(variance) || 1;
       return values.map((value) => (value - mean) / deviation);
     }
-    async function compareFaces(referencePhoto, selfiePhoto) {
-      const a = await imageVector(referencePhoto);
-      const b = await imageVector(selfiePhoto);
-      let dot = 0;
-      for (let i = 0; i < a.length; i += 1) dot += a[i] * b[i];
-      const correlation = dot / a.length;
-      return Math.max(0, Math.min(100, Math.round(((correlation + 1) / 2) * 100)));
-    }
     facePhotoInput.addEventListener('change', async () => {
       facePhoto = await fileToDataUrl(facePhotoInput.files?.[0]);
       facePreview.innerHTML = facePhoto ? '<img src="' + facePhoto + '" alt="Selfie">' : '<span>Sem foto</span>';
@@ -766,41 +760,20 @@ function studentAccessPage() {
     faceForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       faceResult.className = 'attendance-result empty';
-      faceResult.textContent = 'Comparando rosto com os alunos cadastrados...';
+      faceResult.textContent = 'Comparando rosto com os cadastros ativos...';
       if (!facePhoto) facePhoto = await fileToDataUrl(facePhotoInput.files?.[0]);
-      const referenceRes = await fetch('/api/attendance/references');
-      const references = await referenceRes.json().catch(() => []);
-      if (!referenceRes.ok || !references.length) {
-        faceResult.className = 'attendance-result error';
-        faceResult.textContent = 'Nenhum aluno com foto cadastrada foi encontrado.';
-        return;
-      }
-      const scores = [];
+      let faceVector = [];
       try {
-        for (const reference of references) {
-          const score = await compareFaces(reference.photo, facePhoto);
-          scores.push({ ...reference, faceScore: score });
-        }
+        faceVector = await imageVector(facePhoto);
       } catch (error) {
         faceResult.className = 'attendance-result error';
-        faceResult.textContent = 'Nao foi possivel comparar as fotos. Tire outra selfie com o rosto centralizado.';
-        return;
-      }
-      scores.sort((a, b) => b.faceScore - a.faceScore);
-      const best = scores[0];
-      const second = scores[1];
-      const faceScore = best?.faceScore || 0;
-      const faceGap = second ? faceScore - second.faceScore : 100;
-      const faceMatched = faceScore >= 82 && faceGap >= 8;
-      if (!faceMatched) {
-        faceResult.className = 'attendance-result error';
-        faceResult.innerHTML = '<strong>Acesso negado.</strong><span>A selfie nao conferiu com seguranca. Similaridade: ' + faceScore + '% | Diferenca para outro cadastro: ' + faceGap + '%</span>';
+        faceResult.textContent = 'Nao foi possivel ler a selfie. Tire outra foto com o rosto centralizado.';
         return;
       }
       const loginRes = await fetch('/api/student/face-login-auto', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ studentId: best.studentId, photo: facePhoto, faceScore, faceGap, faceMatched })
+        body: JSON.stringify({ photo: facePhoto, faceVector })
       });
       const login = await loginRes.json().catch(() => ({}));
       if (!loginRes.ok) {
@@ -810,7 +783,7 @@ function studentAccessPage() {
       }
       sessionStorage.setItem('fusion-student-face-' + login.slug, login.token);
       faceResult.className = 'attendance-result ok';
-      faceResult.innerHTML = '<strong>Acesso liberado.</strong><span>' + login.studentName + ' | Similaridade: ' + faceScore + '%</span>';
+      faceResult.innerHTML = '<strong>Acesso liberado.</strong><span>' + login.studentName + ' | Similaridade: ' + login.faceScore + '%</span>';
       location.href = '/aluno/' + login.slug;
     });
     async function run() {
@@ -834,7 +807,7 @@ function attendancePage() {
     <section class="login-panel attendance-panel">
       <p class="eyebrow">Controle de presenca</p>
       <h1>Entrada por foto facial</h1>
-      <p>Digite o nome completo ou CPF cadastrado, tire uma selfie pelo celular e registre a presenca no servidor local.</p>
+      <p>Digite o nome completo ou CPF cadastrado, tire uma selfie pelo celular e registre a presenca online.</p>
       <form id="attendanceForm" class="editor-form">
         <label>Nome completo ou CPF<input id="studentSearch" name="search" autocomplete="off" required placeholder="Digite o nome completo ou CPF"></label>
         <label>Selfie do aluno<input id="facePhoto" name="facePhoto" type="file" accept="image/*" capture="user" required></label>
@@ -890,45 +863,24 @@ function attendancePage() {
       const deviation = Math.sqrt(variance) || 1;
       return values.map((value) => (value - mean) / deviation);
     }
-    async function compareFaces(referencePhoto, selfiePhoto) {
-      const a = await imageVector(referencePhoto);
-      const b = await imageVector(selfiePhoto);
-      let dot = 0;
-      for (let i = 0; i < a.length; i += 1) dot += a[i] * b[i];
-      const correlation = dot / a.length;
-      return Math.max(0, Math.min(100, Math.round(((correlation + 1) / 2) * 100)));
-    }
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       result.className = 'attendance-result empty';
-      result.textContent = 'Comparando rosto com a foto cadastrada...';
+      result.textContent = 'Comparando rosto com o cadastro...';
       if (!photo) photo = await fileToDataUrl(fileInput.files?.[0]);
-      const referenceRes = await fetch('/api/attendance/reference?search=' + encodeURIComponent(document.getElementById('studentSearch').value));
-      const reference = await referenceRes.json().catch(() => ({}));
-      if (!referenceRes.ok) {
-        result.className = 'attendance-result error';
-        result.textContent = reference.error || 'Aluno nao encontrado.';
-        return;
-      }
-      let faceScore = 0;
+      let faceVector = [];
       try {
-        faceScore = await compareFaces(reference.photo, photo);
+        faceVector = await imageVector(photo);
       } catch (error) {
         result.className = 'attendance-result error';
-        result.textContent = 'Nao foi possivel comparar as fotos. Tire outra selfie com o rosto centralizado.';
-        return;
-      }
-      const faceMatched = faceScore >= 82;
-      if (!faceMatched) {
-        result.className = 'attendance-result error';
-        result.innerHTML = '<strong>Presenca negada.</strong><span>A selfie nao parece ser da mesma pessoa cadastrada. Similaridade: ' + faceScore + '%</span>';
+        result.textContent = 'Nao foi possivel ler a selfie. Tire outra foto com o rosto centralizado.';
         return;
       }
       result.textContent = 'Rosto conferido. Registrando presenca...';
       const res = await fetch('/api/attendance/checkin', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ search: document.getElementById('studentSearch').value, photo, faceScore, faceMatched })
+        body: JSON.stringify({ search: document.getElementById('studentSearch').value, photo, faceVector })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -937,7 +889,7 @@ function attendancePage() {
         return;
       }
       result.className = 'attendance-result ok';
-      result.innerHTML = '<strong>' + data.message + '</strong><span>' + data.studentName + ' | ' + data.time + ' | Similaridade: ' + faceScore + '%</span>';
+      result.innerHTML = '<strong>' + data.message + '</strong><span>' + data.studentName + ' | ' + data.time + ' | Similaridade: ' + data.faceScore + '%</span>';
       form.reset();
       photo = '';
       preview.innerHTML = '<span>Sem foto</span>';
@@ -1265,7 +1217,7 @@ function professorPage(id) {
       if (res.ok) {
         const updated = await res.json();
         students = students.map((item) => item.id === updated.id ? updated : item);
-        document.getElementById('saved').textContent = 'Salvo no servidor local.';
+        document.getElementById('saved').textContent = 'Salvo no servidor online.';
       }
     }
     async function saveForm(e) {
@@ -1603,7 +1555,7 @@ function adminPage() {
           e.preventDefault();
           const form = await formWithPhoto(e.currentTarget);
           const body = {
-            photo: form.photo || s.photo || "", faceVector: form.faceVector || s.faceVector || [], registration: form.registration, name: form.name, address: form.address, district: form.district, zipCode: form.zipCode, city: form.city, state: form.state, phone: form.phone, mobile: form.mobile, gender: form.gender, cpf: form.cpf, identity: form.identity, identityState: form.identityState, email: form.email, birthDate: form.birthDate, age: form.age, situation: form.situation, debit: form.debit, registrationNotes: form.registrationNotes,
+            photo: form.photo || s.photo || "", faceVector: form.faceVector && form.faceVector.length ? form.faceVector : s.faceVector || [], registration: form.registration, name: form.name, address: form.address, district: form.district, zipCode: form.zipCode, city: form.city, state: form.state, phone: form.phone, mobile: form.mobile, gender: form.gender, cpf: form.cpf, identity: form.identity, identityState: form.identityState, email: form.email, birthDate: form.birthDate, age: form.age, situation: form.situation, debit: form.debit, registrationNotes: form.registrationNotes,
             medicalExamValidUntil: form.medicalExamValidUntil, physicalAssessmentValidUntil: form.physicalAssessmentValidUntil, objective: form.objective, profession: form.profession, maritalStatus: form.maritalStatus, company: form.company, companyPhone: form.companyPhone, referralSource: form.referralSource, fatherName: form.fatherName, fatherPhone: form.fatherPhone, motherName: form.motherName, motherPhone: form.motherPhone, extraInfo: form.extraInfo,
             professorId: form.professorId, planId: form.planId, paymentDue: form.paymentDue, paymentStatus: form.paymentStatus, status: form.status || 'Ativo', blocked: form.blocked === 'sim',
             accessRules: { restrictedSchedule: form.restrictedSchedule === 'sim', scheduleDay: form.scheduleDay, scheduleEntry: form.scheduleEntry, scheduleExit: form.scheduleExit, schedulePlace: form.schedulePlace, scheduleClass: form.scheduleClass, limitDailyAccess: form.limitDailyAccess === 'sim', accessesPerDay: form.accessesPerDay, limitWeeklyAccess: form.limitWeeklyAccess === 'sim', accessesPerWeek: form.accessesPerWeek, reentryControl: form.reentryControl === 'sim', reentryMinutes: form.reentryMinutes, reentrySeconds: form.reentrySeconds },
@@ -1742,7 +1694,7 @@ const server = http.createServer(async (req, res) => {
       const plan = db.plans.find((item) => item.id === body.planId && item.active !== false);
       if (!plan) return json(res, 400, { error: "Escolha o plano desejado antes de enviar." });
       if (db.students.some((student) => onlyDigits(student.cpf) === cpf)) return json(res, 409, { error: "Ja existe um cadastro com este CPF. Entre em contato pelo WhatsApp para recuperar senha.", contactUrl: "https://wa.me/5582996724169?text=recuperar%20senha" });
-      if (!Array.isArray(body.faceVector) || body.faceVector.length < 100) return json(res, 400, { error: "Nao foi possivel validar a foto facial. Tire outra foto com o rosto centralizado." });
+      if (!isUsableFaceVector(body.faceVector)) return json(res, 400, { error: "Nao foi possivel validar a foto facial. Tire outra foto com o rosto centralizado e boa iluminacao." });
       const faceDuplicate = findFaceDuplicate(db, body.faceVector);
       if (faceDuplicate) return json(res, 409, { error: "Ja existe um cadastro com caracteristicas faciais muito parecidas. Procure a administracao para conferencia.", faceScore: faceDuplicate.score, contactUrl: "https://wa.me/5582996724169?text=recuperar%20senha" });
       const student = buildStudent(db, {
@@ -1776,14 +1728,11 @@ const server = http.createServer(async (req, res) => {
       const student = db.students.find((s) => (cpf && onlyDigits(s.cpf) === cpf) || normalize(s.name) === name);
       if (!student) return json(res, 404, { error: "Aluno nao encontrado. Digite o nome completo ou CPF cadastrado." });
       if (!canStudentAccess(student)) return json(res, 403, { error: studentAccessMessage(student) });
-      if (!student.photo) return json(res, 400, { error: "Aluno sem foto cadastrada. Cadastre a foto no administrador antes de usar reconhecimento facial." });
-      return json(res, 200, { studentId: student.id, studentName: student.name, photo: student.photo });
+      if (!isUsableFaceVector(student.faceVector)) return json(res, 400, { error: "Aluno sem assinatura facial valida. Atualize a foto no administrador antes de usar reconhecimento facial." });
+      return json(res, 200, { studentId: student.id, studentName: student.name });
     }
     if (req.method === "GET" && url.pathname === "/api/attendance/references") {
-      const references = db.students
-        .filter((student) => canStudentAccess(student) && student.photo)
-        .map((student) => ({ studentId: student.id, studentName: student.name, slug: student.slug, photo: student.photo }));
-      return json(res, 200, references);
+      return json(res, 403, { error: "Lista publica de fotos desativada na versao online." });
     }
     if (req.method === "POST" && url.pathname === "/api/student/face-login") {
       const body = await readBody(req);
@@ -1793,9 +1742,10 @@ const server = http.createServer(async (req, res) => {
       const student = db.students.find((s) => (cpf && onlyDigits(s.cpf) === cpf) || normalize(s.name) === name);
       if (!student) return json(res, 404, { error: "Aluno nao encontrado. Digite o nome completo ou CPF cadastrado." });
       if (!canStudentAccess(student)) return json(res, 403, { error: studentAccessMessage(student) });
-      if (!student.photo) return json(res, 400, { error: "Aluno sem foto cadastrada. Cadastre a foto no administrador antes de usar reconhecimento facial." });
-      const faceScore = Number(body.faceScore || 0);
-      const faceMatched = body.faceMatched === true || body.faceMatched === "true";
+      if (!isUsableFaceVector(student.faceVector)) return json(res, 400, { error: "Aluno sem assinatura facial valida. Atualize a foto no administrador." });
+      if (!isUsableFaceVector(body.faceVector)) return json(res, 400, { error: "Selfie sem qualidade suficiente. Tire outra foto com boa iluminacao." });
+      const faceScore = compareFaceVectors(student.faceVector, body.faceVector);
+      const faceMatched = faceScore >= 82;
       if (!faceMatched || faceScore < 82) return json(res, 403, { error: "Acesso negado. A selfie nao confere com seguranca com a foto cadastrada." });
       const token = randomUUID();
       const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString();
@@ -1806,13 +1756,19 @@ const server = http.createServer(async (req, res) => {
     }
     if (req.method === "POST" && url.pathname === "/api/student/face-login-auto") {
       const body = await readBody(req);
-      const student = db.students.find((s) => s.id === body.studentId);
-      if (!student) return json(res, 404, { error: "Aluno nao encontrado." });
+      if (!isUsableFaceVector(body.faceVector)) return json(res, 400, { error: "Selfie sem qualidade suficiente. Tire outra foto com boa iluminacao." });
+      const candidates = (db.students || [])
+        .filter((student) => canStudentAccess(student) && isUsableFaceVector(student.faceVector))
+        .map((student) => ({ student, score: compareFaceVectors(student.faceVector, body.faceVector) }))
+        .sort((a, b) => b.score - a.score);
+      const best = candidates[0];
+      const second = candidates[1];
+      if (!best) return json(res, 404, { error: "Nenhum aluno ativo com foto facial valida foi encontrado." });
+      const student = best.student;
       if (!canStudentAccess(student)) return json(res, 403, { error: studentAccessMessage(student) });
-      if (!student.photo) return json(res, 400, { error: "Aluno sem foto cadastrada." });
-      const faceScore = Number(body.faceScore || 0);
-      const faceGap = Number(body.faceGap || 0);
-      const faceMatched = body.faceMatched === true || body.faceMatched === "true";
+      const faceScore = best.score;
+      const faceGap = second ? faceScore - second.score : 100;
+      const faceMatched = faceScore >= 82 && faceGap >= 8;
       if (!faceMatched || faceScore < 82 || faceGap < 8) return json(res, 403, { error: "Acesso negado. A selfie nao conferiu com seguranca. Tente novamente com boa luz ou procure a recepcao." });
       const token = randomUUID();
       const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString();
@@ -1829,17 +1785,18 @@ const server = http.createServer(async (req, res) => {
       const student = db.students.find((s) => (cpf && onlyDigits(s.cpf) === cpf) || normalize(s.name) === name);
       if (!student) return json(res, 404, { error: "Aluno nao encontrado. Digite o nome completo ou CPF cadastrado." });
       if (!canStudentAccess(student)) return json(res, 403, { error: studentAccessMessage(student) });
-      if (!student.photo) return json(res, 400, { error: "Aluno sem foto cadastrada. Cadastre a foto no administrador antes de usar reconhecimento facial." });
+      if (!isUsableFaceVector(student.faceVector)) return json(res, 400, { error: "Aluno sem assinatura facial valida. Atualize a foto no administrador antes de usar reconhecimento facial." });
       if (!body.photo) return json(res, 400, { error: "Tire a foto facial antes de registrar." });
-      const faceScore = Number(body.faceScore || 0);
-      const faceMatched = body.faceMatched === true || body.faceMatched === "true";
+      if (!isUsableFaceVector(body.faceVector)) return json(res, 400, { error: "Selfie sem qualidade suficiente. Tire outra foto com boa iluminacao." });
+      const faceScore = compareFaceVectors(student.faceVector, body.faceVector);
+      const faceMatched = faceScore >= 82;
       if (!faceMatched || faceScore < 82) return json(res, 403, { error: "Presenca negada. A selfie nao confere com seguranca com a foto cadastrada." });
       const now = new Date();
       const today = now.toISOString().slice(0, 10);
       const alreadyToday = (db.attendance || []).find((entry) => entry.studentId === student.id && String(entry.createdAt || "").slice(0, 10) === today);
       if (alreadyToday) {
         student.lastCheckin = alreadyToday.createdAt.slice(0, 10);
-        return json(res, 200, { duplicate: true, message: "Presenca ja registrada hoje.", studentName: student.name, time: new Date(alreadyToday.createdAt).toLocaleString("pt-BR") });
+        return json(res, 200, { duplicate: true, message: "Presenca ja registrada hoje.", studentName: student.name, time: new Date(alreadyToday.createdAt).toLocaleString("pt-BR"), faceScore });
       }
       const entry = {
         id: `presenca-${Date.now()}`,
@@ -1858,7 +1815,7 @@ const server = http.createServer(async (req, res) => {
       student.lastCheckin = today;
       student.frequency = `${total} presenca${total === 1 ? "" : "s"} registrada${total === 1 ? "" : "s"}`;
       await saveDb(db);
-      return json(res, 201, { message: "Presenca registrada.", studentName: student.name, time: now.toLocaleString("pt-BR"), entry });
+      return json(res, 201, { message: "Presenca registrada.", studentName: student.name, time: now.toLocaleString("pt-BR"), faceScore, entry });
     }
     if (req.method === "GET" && url.pathname.startsWith("/api/student/")) {
       const slug = decodeURIComponent(url.pathname.split("/").pop());
@@ -1958,6 +1915,7 @@ const server = http.createServer(async (req, res) => {
       const cpf = onlyDigits(body.cpf);
       if (!cpf) return json(res, 400, { error: "CPF obrigatorio para concluir o cadastro." });
       if (db.students.some((student) => onlyDigits(student.cpf) === cpf)) return json(res, 409, { error: "Ja existe um aluno cadastrado com este CPF." });
+      if (Array.isArray(body.faceVector) && body.faceVector.length && !isUsableFaceVector(body.faceVector)) return json(res, 400, { error: "A foto facial nao tem qualidade suficiente. Tire outra foto com boa iluminacao." });
       const faceDuplicate = findFaceDuplicate(db, body.faceVector);
       if (faceDuplicate) return json(res, 409, { error: "Ja existe um cadastro com caracteristicas faciais muito parecidas. Confira antes de cadastrar novamente." });
       const student = buildStudent(db, body);
@@ -1976,6 +1934,10 @@ const server = http.createServer(async (req, res) => {
         const cpf = onlyDigits(body.cpf);
         if (!cpf) return json(res, 400, { error: "CPF obrigatorio para concluir o cadastro." });
         if (db.students.some((item) => item.id !== student.id && onlyDigits(item.cpf) === cpf)) return json(res, 409, { error: "Ja existe um aluno cadastrado com este CPF." });
+      }
+      if (body.faceVector !== undefined) {
+        if (Array.isArray(body.faceVector) && !body.faceVector.length) delete body.faceVector;
+        else if (!isUsableFaceVector(body.faceVector)) return json(res, 400, { error: "A foto facial nao tem qualidade suficiente. Tire outra foto com boa iluminacao." });
       }
       if (body.faceVector !== undefined) {
         const faceDuplicate = findFaceDuplicate(db, body.faceVector, student.id);
@@ -2125,8 +2087,8 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(port, "0.0.0.0", () => {
-  console.log("\nFusion Combat Fit - servidor local iniciado");
-  console.log("No computador servidor: http://localhost:" + port);
+  console.log("\nFusion Combat Fit - servidor online iniciado");
+  console.log("Endereco do servidor: http://localhost:" + port);
   for (const item of Object.values(os.networkInterfaces()).flat()) {
     if (item && item.family === "IPv4" && !item.internal) console.log("No Wi-Fi: http://" + item.address + ":" + port);
   }
