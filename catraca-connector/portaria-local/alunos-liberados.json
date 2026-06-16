@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "generatedAt": "2026-06-16T09:19:55.226Z",
+  "students": [
+    {
+      "id": "annapatriciaoliveiradasilva",
+      "slug": "annapatriciaoliveiradasilva",
+      "name": "ANA PATRICIA OLIVEIRA DA SILVA",
+      "cpf": "44433322211",
+      "registration": "00001",
+      "accessCardNumber": "",
+      "paymentStatus": "Em dia",
+      "status": "Ativo",
+      "blocked": false,
+      "updatedAt": "2026-06-16T09:17:33.825Z"
+    },
+    {
+      "id": "marcos-andre-souza",
+      "slug": "marcos-andre-souza",
+      "name": "marcos andre souza",
+      "cpf": "04877315497",
+      "registration": "02",
+      "accessCardNumber": "",
+      "paymentStatus": "Em dia",
+      "status": "Ativo",
+      "blocked": false,
+      "updatedAt": "2026-06-16T09:17:33.825Z"
+    },
+    {
+      "id": "marcos-andre-de-souza",
+      "slug": "marcos-andre-de-souza",
+      "name": "Marcos André de Souza ",
+      "cpf": "04877315492",
+      "registration": "00003",
+      "accessCardNumber": "",
+      "paymentStatus": "Em dia",
+      "status": "Ativo",
+      "blocked": false,
+      "updatedAt": "2026-06-16T09:17:33.825Z"
+    }
+  ]
+}
