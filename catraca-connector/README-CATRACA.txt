@@ -15,10 +15,10 @@ Como funciona:
 4. O resultado volta para o painel admin.
 
 Modo atual:
-- driver.mode = online2-dll
-- Neste modo ele usa a DLL Online2.dll do SCA/Henry com Node 32 bits.
-- Este modo nao depende da tela "Liberacao de Catraca" ficar aberta.
-- O retorno principal de sucesso e Liberate = 1. Em alguns ambientes o OpenComm pode retornar 0 mesmo com a liberacao aceita pela DLL.
+- driver.mode = henry-ui
+- Este modo e o caminho anterior, usado antes da tentativa com Online2.dll.
+- O site cria o comando, o conector local recebe e tenta acionar pela tela/programa Henry.
+- A DLL Online2.dll continua configurada no arquivo, mas nao e o caminho principal agora.
 
 Para testar:
 1. Abra config.json.
@@ -45,8 +45,8 @@ O arquivo BIOMETRIA-MANUAL-TESTE.bat e temporario para testar a regra.
 Depois podemos trocar pelo leitor biometrico real instalado no computador.
 
 Para liberar fisicamente:
-- Hoje o modo recomendado e online2-dll, usando C:\PROSISTEMAS\SCA\Online2.dll.
-- O modo henry-ui continua existindo como plano reserva, usando a tela do Henry7x.
+- Hoje o modo principal voltou a ser henry-ui, usando a tela/programa Henry7x.
+- O modo online2-dll fica como plano reserva, usando C:\PROSISTEMAS\SCA\Online2.dll.
 - Para liberar sem depender da tela do Henry aberta, precisamos do comando hexadecimal oficial da Henry 7x Card II firmware 7105.
 - Quando o comando TCP ou SDK for confirmado, mudar driver.mode para tcp-raw ou program.
 
