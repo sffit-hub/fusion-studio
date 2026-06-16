@@ -18,6 +18,7 @@ Modo atual:
 - driver.mode = online2-dll
 - Neste modo ele usa a DLL Online2.dll do SCA/Henry com Node 32 bits.
 - Este modo nao depende da tela "Liberacao de Catraca" ficar aberta.
+- O retorno principal de sucesso e Liberate = 1. Em alguns ambientes o OpenComm pode retornar 0 mesmo com a liberacao aceita pela DLL.
 
 Para testar:
 1. Abra config.json.

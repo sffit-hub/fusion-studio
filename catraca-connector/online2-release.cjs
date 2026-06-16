@@ -51,7 +51,7 @@ try {
   const parameters = SetParameters(ip, porta);
   const open = OpenComm(tipoComm, idEquipamento);
   const liberate = Liberate(idEquipamento, sentidoGiro);
-  const ok = open === 1 && liberate === 1;
+  const ok = liberate === 1;
 
   console.log(JSON.stringify({
     ok,
@@ -60,7 +60,10 @@ try {
     open,
     liberate,
     idEquipamento,
-    sentidoGiro
+    sentidoGiro,
+    message: ok
+      ? "Liberacao aceita pela Online2.dll."
+      : "Online2.dll nao confirmou a liberacao."
   }));
 
   process.exit(ok ? 0 : 2);
