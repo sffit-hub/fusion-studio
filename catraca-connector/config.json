@@ -14,7 +14,7 @@
     "syncIntervalMs": 60000
   },
   "driver": {
-    "mode": "online2-dll",
+    "mode": "henry-ui",
     "henryUiWindowTitle": "Liberação de Catraca - [catra-site]",
     "henryUiReleaseMode": "both",
     "henryUiPrep": {
