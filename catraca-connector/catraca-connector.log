@@ -378,3 +378,18 @@ nnector\henry-ui-release.ps1:39 caractere:3
 [2026-06-15T20:51:03.521Z] OK: {"ok":true,"active":1,"parameters":1,"open":0,"liberate":1,"idEquipamento":1,"sentidoGiro":1}
 [2026-06-15T20:51:48.505Z] Lista offline ainda nao sincronizada: HTTP 404
 [2026-06-15T20:52:48.711Z] Lista offline ainda nao sincronizada: HTTP 404
+[2026-06-16T09:16:40.733Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: online2-dll
+[2026-06-16T09:16:41.514Z] Lista offline atualizada: 3 alunos liberados.
+[2026-06-16T09:16:52.571Z] Conector iniciado. Site: https://fusion-studio.onrender.com | Catraca: 10.0.0.236:3000 | modo: online2-dll
+[2026-06-16T09:16:53.209Z] Lista offline atualizada: 3 alunos liberados.
+[2026-06-16T09:17:00.478Z] Comando recebido: catraca-1781601417022-7f5076 | Marcos André de Souza 
+[2026-06-16T09:17:01.577Z] OK: {"ok":true,"active":1,"parameters":1,"open":0,"liberate":1,"idEquipamento":1,"sentidoGiro":1,"message":"Liberacao aceita pela Online2.dll."}
+[2026-06-16T09:17:14.300Z] Comando recebido: catraca-1781601431417-fad643 | Marcos André de Souza 
+[2026-06-16T09:17:15.313Z] OK: {"ok":true,"active":1,"parameters":1,"open":0,"liberate":1,"idEquipamento":1,"sentidoGiro":1,"message":"Liberacao aceita pela Online2.dll."}
+[2026-06-16T09:17:25.424Z] Comando recebido: catraca-1781601441528-58e57a | Marcos André de Souza 
+[2026-06-16T09:17:26.687Z] OK: {"ok":true,"active":1,"parameters":1,"open":0,"liberate":1,"idEquipamento":1,"sentidoGiro":1,"message":"Liberacao aceita pela Online2.dll."}
+[2026-06-16T09:17:33.537Z] Comando recebido: catraca-1781601451221-a57896 | Marcos André de Souza 
+[2026-06-16T09:17:34.650Z] OK: {"ok":true,"active":1,"parameters":1,"open":0,"liberate":1,"idEquipamento":1,"sentidoGiro":1,"message":"Liberacao aceita pela Online2.dll."}
+[2026-06-16T09:17:55.285Z] Lista offline atualizada: 3 alunos liberados.
+[2026-06-16T09:18:55.377Z] Lista offline atualizada: 3 alunos liberados.
+[2026-06-16T09:19:55.699Z] Lista offline atualizada: 3 alunos liberados.
