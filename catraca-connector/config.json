@@ -17,9 +17,11 @@
     "mode": "henry-ui",
     "henryUiWindowTitle": "Liberação de Catraca - [catra-site]",
     "henryUiReleaseMode": "both",
+    "defaultHoldSeconds": 5,
     "henryUiPrep": {
       "enabled": true,
       "henryProgramPath": "C:\\Program Files (x86)\\Henry\\Henry7x\\Henry7x.exe",
+      "defaultHoldSeconds": 5,
       "equipmentClickX": 165,
       "equipmentClickY": 105,
       "liberarMenuOffsetX": 230,
