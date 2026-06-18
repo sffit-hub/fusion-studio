@@ -171,7 +171,7 @@ function createTurnstileCommand(db, student, reason = "manual") {
     id: `catraca-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
     type: "open",
     reason,
-    holdSeconds: reason === "student-page" ? 10 : 3,
+    holdSeconds: 5,
     studentId: student.id,
     studentName: student.name,
     status: "pending",
@@ -1089,7 +1089,7 @@ function studentPage(slug) {
         '<section class="student-hero"><div class="student-photo-wrap">' + (s.photo ? '<img src="' + s.photo + '" alt="Foto do aluno">' : '<span>Sem foto</span>') + '</div><div><p>Bem-vindo</p><h1>' + s.name + '</h1><span>Professor: ' + s.professorName + '</span></div></section>' +
         '<section class="student-summary"><article class="student-card' + alert + '"><span>Vencimento</span><strong>' + s.paymentDue + '</strong><small>' + s.paymentStatus + '</small></article><article class="student-card"><span>Plano</span><strong>' + s.plan + '</strong><small>Matricula ativa</small></article><article class="student-card"><span>Frequencia</span><strong>' + s.frequency + '</strong><small>Ultima entrada: ' + s.lastCheckin + '</small></article></section>' +
         '<nav class="student-tabs"><a href="#treino">Treino</a><a href="#avaliacao">Avaliacao</a><a href="#dados">Dados</a></nav>' +
-        '<section class="student-section" id="catraca"><h2>Catraca</h2><div class="student-card"><span>Entrada liberada pelo aluno</span><strong>1 vez por dia</strong><small>A catraca fica livre por 10 segundos.</small><button class="button primary" id="studentOpenTurnstile">Liberar catraca agora</button><p id="studentTurnstileResult" class="empty"></p></div></section>' +
+        '<section class="student-section" id="catraca"><h2>Catraca</h2><div class="student-card"><span>Entrada liberada pelo aluno</span><strong>1 vez por dia</strong><small>A catraca fica livre por 5 segundos.</small><button class="button primary" id="studentOpenTurnstile">Liberar catraca agora</button><p id="studentTurnstileResult" class="empty"></p></div></section>' +
         '<section class="student-section" id="treino"><h2>Treino atual</h2>' + renderWorkout(s.routine) + '</section>' +
         '<section class="student-section" id="avaliacao"><h2>Avaliacao fisica e anamnese</h2>' + renderAssessment(s.assessmentData) + '</section>' +
         '<section class="student-section" id="dados"><h2>Dados do acesso</h2><div class="readonly-grid"><div><span>Matricula</span><strong>' + text(s.registration) + '</strong></div><div><span>CPF</span><strong>' + text(s.cpf) + '</strong></div><div><span>Celular</span><strong>' + text(s.mobile) + '</strong></div></div></section>';
@@ -1110,7 +1110,7 @@ function studentPage(slug) {
         });
         const data = await res.json().catch(() => ({}));
         if (res.ok) {
-          result.textContent = data.message || 'Catraca liberada por 10 segundos.';
+          result.textContent = data.message || 'Catraca liberada por 5 segundos.';
         } else {
           result.textContent = data.error || 'Nao foi possivel liberar a catraca.';
           button.disabled = false;
@@ -2076,7 +2076,7 @@ const server = http.createServer(async (req, res) => {
       if (alreadyToday) return json(res, 429, { error: "A catraca ja foi liberada hoje pela sua pagina. Procure a recepcao se precisar liberar novamente." });
       const command = createTurnstileCommand(db, student, "student-page");
       await saveDb(db);
-      return json(res, 201, { ok: true, command, message: "Liberacao enviada. A catraca ficara livre por 10 segundos." });
+      return json(res, 201, { ok: true, command, message: "Liberacao enviada. A catraca ficara livre por 5 segundos." });
     }
     if (req.method === "GET" && url.pathname.match(/^\/api\/professor\/[^/]+\/students$/)) {
       const professorId = url.pathname.split("/")[3];
