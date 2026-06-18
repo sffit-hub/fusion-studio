@@ -19,6 +19,19 @@ Modo atual:
 - Este modo e o caminho anterior, usado antes da tentativa com Online2.dll.
 - O site cria o comando, o conector local recebe e tenta acionar pela tela/programa Henry.
 - A DLL Online2.dll continua configurada no arquivo, mas nao e o caminho principal agora.
+- O tempo padrao de liberacao agora e 5 segundos.
+
+AUTOMACAO DA PORTARIA
+
+Para iniciar tudo automaticamente:
+1. Abra INSTALAR-PORTARIA-AUTOMATICA-WINDOWS.bat como administrador.
+2. Ao entrar no Windows, o sistema tentara abrir o Henry7x, preparar a tela de liberacao em 5 segundos e iniciar o conector.
+
+Para iniciar manualmente a automacao:
+- Abra INICIAR-PORTARIA-AUTOMATICA.bat como administrador.
+
+Para remover a inicializacao automatica:
+- Abra REMOVER-PORTARIA-AUTOMATICA-WINDOWS.bat.
 
 Para testar:
 1. Abra config.json.
@@ -32,7 +45,7 @@ OPCOES DE LIBERACAO
 - O aluno entra na pagina dele.
 - Clica em Liberar catraca agora.
 - O sistema permite apenas 1 vez por dia.
-- A janela de liberacao enviada ao conector e de 10 segundos.
+- A janela de liberacao enviada ao conector e de 5 segundos.
 
 2. Liberacao por biometria no computador
 - Abra INICIAR-CONECTOR-CATRACA.bat e deixe aberto.
