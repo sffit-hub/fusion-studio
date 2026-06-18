@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generatedAt": "2026-06-16T09:19:55.226Z",
+  "generatedAt": "2026-06-16T11:28:20.614Z",
   "students": [
     {
       "id": "annapatriciaoliveiradasilva",
@@ -12,7 +12,7 @@
       "paymentStatus": "Em dia",
       "status": "Ativo",
       "blocked": false,
-      "updatedAt": "2026-06-16T09:17:33.825Z"
+      "updatedAt": "2026-06-16T11:17:00.515Z"
     },
     {
       "id": "marcos-andre-souza",
@@ -24,7 +24,7 @@
       "paymentStatus": "Em dia",
       "status": "Ativo",
       "blocked": false,
-      "updatedAt": "2026-06-16T09:17:33.825Z"
+      "updatedAt": "2026-06-16T11:17:00.515Z"
     },
     {
       "id": "marcos-andre-de-souza",
@@ -36,7 +36,7 @@
       "paymentStatus": "Em dia",
       "status": "Ativo",
       "blocked": false,
-      "updatedAt": "2026-06-16T09:17:33.825Z"
+      "updatedAt": "2026-06-16T11:17:00.515Z"
     }
   ]
 }
