@@ -116,7 +116,7 @@ function openByProgram(command) {
 }
 
 function openByHenryUi(command) {
-  const holdSeconds = Math.max(1, Math.min(Number(command.holdSeconds || 10), 30));
+  const holdSeconds = Math.max(1, Math.min(Number(command.holdSeconds || config.driver?.defaultHoldSeconds || 5), 30));
   const title = config.driver?.henryUiWindowTitle || "Liberação de Catraca";
   const releaseMode = config.driver?.henryUiReleaseMode || "both";
   return new Promise((resolve, reject) => {
@@ -166,7 +166,7 @@ function openByOnline2Dll(command) {
 
 async function openTurnstile(command) {
   const mode = config.driver?.mode || "dry-run";
-  const holdSeconds = Number(command.holdSeconds || 3);
+  const holdSeconds = Number(command.holdSeconds || config.driver?.defaultHoldSeconds || 5);
   if (mode === "dry-run") {
     await sleep(Math.min(holdSeconds, 10) * 1000);
     return `Teste recebido pelo conector. Janela simulada de ${holdSeconds} segundos. Modo dry-run nao abre a catraca.`;
